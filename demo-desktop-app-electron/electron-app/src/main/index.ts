@@ -188,14 +188,17 @@ ipcMain.handle(
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function injectAppData(html: string, appData: object): string {
-  const scriptTag = `<script>window.APP_DATA = ${JSON.stringify(appData)};</script>`
-  // Inject just before </head> if present, otherwise before </body>, otherwise prepend
-  if (html.includes('</head>')) {
-    return html.replace('</head>', `${scriptTag}\n</head>`)
-  } else if (html.includes('</body>')) {
-    return html.replace('</body>', `${scriptTag}\n</body>`)
-  }
-  return scriptTag + '\n' + html
+  const scriptTag = `<script>window.APP_DATA = ${JSON.stringify(appData)};window.MY_APP_DATA=window.APP_DATA</script>`
+  // // Inject just before </head> if present, otherwise before </body>, otherwise prepend
+  // if (html.includes('</head>')) {
+  //   return html.replace('</head>', `${scriptTag}\n</head>`)
+  // } else if (html.includes('</body>')) {
+  //   return html.replace('</body>', `${scriptTag}\n</body>`)
+  // }
+  // return scriptTag + '\n' + html
+
+  // Insert before the first <script> tag (your bundle)
+  return html.replace(/<script/, scriptTag + '\n<script')
 }
 
 async function exportToFolder(
