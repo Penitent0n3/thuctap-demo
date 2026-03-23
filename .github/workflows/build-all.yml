@@ -72,10 +72,10 @@ jobs:
       matrix:
         include:
           # Configuration for Project B #1
-          - project_path: "demo-desktop-app-electron/electron-app"
+          - project_path: "builder-projects/electron-app-mui"
             app_id: "builder-standard"
             os: windows-latest
-          - project_path: "demo-desktop-app-electron/electron-app"
+          - project_path: "builder-projects/electron-app-mui"
             app_id: "builder-standard"
             os: ubuntu-latest
 
