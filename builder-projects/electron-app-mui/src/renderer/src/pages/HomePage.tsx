@@ -128,8 +128,9 @@ export default function HomePage() {
     const initialAppData =
       template.gameType === 'group-sort'
         ? { groups: [], items: [], _groupCounter: 0, _itemCounter: 0 }
-        : template.gameType === 'quiz'
+        : template.gameType === 'plane-quiz'
           ? { questions: [], _questionCounter: 0 }
+<<<<<<< HEAD
           : template.gameType === 'word-search'
             ? {
                 title: 'Word Search Game',
@@ -140,6 +141,10 @@ export default function HomePage() {
                 _itemCounter: 0
               }
           : {}
+=======
+          : template.gameType === 'group-sort'
+        ?{} :{}
+>>>>>>> 3ce010ca3538d05241544dc0b6a1a78eedb40e7c
     const newProject = {
       version: '1.0.0',
       templateId: template.id,
