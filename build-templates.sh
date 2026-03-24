@@ -21,6 +21,8 @@ GAMES=(
   "template-projects/group-sort|group-sort"
   "template-projects/plane-quiz|plane-quiz"
   "template-projects/balloon-letter-picker|balloon-letter-picker"
+  "template-projects/pair-matching|pair-matching"
+  # "template-projects/word-search|word-search" # project la builder ko phai game, ko thay lenh build game
   # "template-projects/my-new-game|my-new-game"
 )
 
@@ -44,7 +46,8 @@ build_game() {
   info "Building '$game_id'  ($project_path)"
 
   # Install dependencies
-  (cd "$abs_project" && yarn install --immutable)
+  # (cd "$abs_project" && yarn install --immutable)
+  (cd "$abs_project" && yarn install)
 
   # Build
   (cd "$abs_project" && yarn build)

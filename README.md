@@ -13,7 +13,9 @@ minigame-builder/
 │
 ├── template-projects/              # One sub-folder per game type
 │   ├── group-sort/                 # Vite + React standalone game
-│   └── plane-quiz/
+│   ├── plane-quiz/
+│   ├── balloon-letter-picker/
+│   └── pair-matching/
 │
 └── builder-projects/
     └── electron-app-mui/           # The Electron editor app
@@ -28,8 +30,10 @@ minigame-builder/
         │       │   │   └── GroupSortEditor.tsx
         │       │   ├── plane-quiz/
         │       │   │   └── QuizEditor.tsx
-        │       │   └── balloon-letter-picker/
-        │       │       └── BalloonLetterPickerEditor.tsx
+        │       │   ├── balloon-letter-picker/
+        │       │   │   └── BalloonLetterPickerEditor.tsx
+        │       │   └── pair-matching/
+        │       │       └── PairMatchingEditor.tsx
         │       ├── components/     # Shared UI primitives (ImagePicker, EditorShared…)
         │       ├── pages/          # HomePage, ProjectPage
         │       ├── context/
@@ -39,7 +43,13 @@ minigame-builder/
             ├── group-sort/
             │   ├── game/           # Built output (index.html + images)
             │   └── meta.json
-            └── plane-quiz/
+            ├── plane-quiz/
+            │   ├── game/
+            │   └── meta.json
+            ├── balloon-letter-picker/
+            │   ├── game/
+            │   └── meta.json
+            └── pair-matching/
                 ├── game/
                 └── meta.json
 ```
@@ -60,9 +70,9 @@ A game template project can use **any tooling** as long as the build output meet
 
 ### Build output
 
-| File | Requirement |
-|---|---|
-| `index.html` | **Single-file HTML** — all JS and CSS must be inlined. Use `vite-plugin-singlefile` (or equivalent) to achieve this. |
+| File                 | Requirement                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `index.html`         | **Single-file HTML** — all JS and CSS must be inlined. Use `vite-plugin-singlefile` (or equivalent) to achieve this.               |
 | `images/` (optional) | Image assets that cannot be inlined. Keep the file count minimal. The builder will copy these alongside the exported `index.html`. |
 
 > No other asset types should be emitted. Fonts, icons, and small SVGs should be inlined into the HTML.
@@ -73,8 +83,10 @@ The builder injects teacher-created content **before the first `<script>` tag** 
 
 ```html
 <script>
-  window.APP_DATA = { /* teacher's data */ };
-  window.MY_APP_DATA = window.APP_DATA;   // legacy alias
+  window.APP_DATA = {
+    /* teacher's data */
+  };
+  window.MY_APP_DATA = window.APP_DATA; // legacy alias
   window.win = { DATA: window.APP_DATA }; // legacy alias
 </script>
 ```
@@ -120,7 +132,7 @@ yarn dev
 To build only a single game template:
 
 ```bash
-./build-templates.sh plane-quiz
+./build-templates.sh group-sort
 ```
 
 ---
@@ -132,11 +144,12 @@ To build only a single game template:
 Create a new folder under `template-projects/`:
 
 ```bash
-cp -r template-projects/plane-quiz template-projects/my-new-game
+cp -r template-projects/group-sort template-projects/my-new-game
 # or scaffold from scratch with: yarn create vite
 ```
 
 **Requirements** (see [Game Template Requirements](#game-template-requirements) above):
+
 - Use `vite-plugin-singlefile` so the build produces a single `index.html`.
 - Read teacher data from `window.APP_DATA` at runtime.
 - Keep any image assets in an `images/` folder; don't emit other loose assets.
@@ -162,6 +175,8 @@ Open `build-templates.sh` and add one line to the `GAMES` array:
 GAMES=(
   "template-projects/group-sort|group-sort"
   "template-projects/plane-quiz|plane-quiz"
+  "template-projects/balloon-letter-picker|balloon-letter-picker"
+  "template-projects/pair-matching|pair-matching"
   "template-projects/my-new-game|my-new-game"   # ← add this
 )
 ```
@@ -179,7 +194,11 @@ matrix:
       game_id: "group-sort"
     - project_path: "template-projects/plane-quiz"
       game_id: "plane-quiz"
-    - project_path: "template-projects/my-new-game"   # ← add this
+    - project_path: "template-projects/balloon-letter-picker"
+      game_id: "balloon-letter-picker"
+    - project_path: "template-projects/pair-matching"
+      game_id: "pair-matching"
+    - project_path: "template-projects/my-new-game" # ← add this
       game_id: "my-new-game"
 ```
 
@@ -192,19 +211,24 @@ Open `builder-projects/electron-app-mui/src/renderer/src/types/index.ts`.
 ```ts
 // ── My New Game ───────────────────────────────────────────────────────────────
 export interface MyNewGameItem {
-  id: string
-  text: string
+  id: string;
+  text: string;
 }
 export interface MyNewGameAppData {
-  items: MyNewGameItem[]
-  _itemCounter: number
+  items: MyNewGameItem[];
+  _itemCounter: number;
 }
 ```
 
 2. Add it to the `AnyAppData` union:
 
 ```ts
-export type AnyAppData = GroupSortAppData | QuizAppData | BalloonLetterPickerAppData | MyNewGameAppData
+export type AnyAppData =
+  | GroupSortAppData
+  | QuizAppData
+  | BalloonLetterPickerAppData
+  | PairMatchingAppData
+  | MyNewGameAppData;
 ```
 
 ### Step 5 — Write the editor component
@@ -215,9 +239,9 @@ The component must accept these props:
 
 ```tsx
 interface Props {
-  appData: MyNewGameAppData
-  projectDir: string
-  onChange: (data: MyNewGameAppData) => void
+  appData: MyNewGameAppData;
+  projectDir: string;
+  onChange: (data: MyNewGameAppData) => void;
 }
 ```
 
@@ -230,19 +254,19 @@ Reuse shared primitives from `../../components/EditorShared` (tabs, counters, et
 Open `builder-projects/electron-app-mui/src/renderer/src/games/registry.ts` and add:
 
 ```ts
-import MyNewGameEditor from './my-new-game/MyNewGameEditor'
+import MyNewGameEditor from "./my-new-game/MyNewGameEditor";
 
 export const GAME_REGISTRY: Record<string, GameRegistryEntry> = {
   // ...existing entries...
 
-  'my-new-game': {
-    Editor: MyNewGameEditor as GameRegistryEntry['Editor'],
+  "my-new-game": {
+    Editor: MyNewGameEditor as GameRegistryEntry["Editor"],
     createInitialData: () => ({
       items: [],
-      _itemCounter: 0
-    })
-  }
-}
+      _itemCounter: 0,
+    }),
+  },
+};
 ```
 
 `createInitialData` must return a valid empty `MyNewGameAppData` that your editor can render without crashing.
@@ -255,12 +279,12 @@ If the shape of `window.APP_DATA` that your game template **reads at runtime** d
 export const GAME_DATA_TRANSFORMS: Record<string, DataTransform> = {
   // ...existing entries...
 
-  'my-new-game': (appData) => {
-    const data = appData as MyNewGameAppData
+  "my-new-game": (appData) => {
+    const data = appData as MyNewGameAppData;
     // return whatever shape your game template expects
-    return data.items.map(({ text }) => ({ text }))
-  }
-}
+    return data.items.map(({ text }) => ({ text }));
+  },
+};
 ```
 
 If the runtime shape is identical to the stored shape, skip this step entirely.
@@ -277,6 +301,7 @@ yarn dev
 ```
 
 Check that:
+
 - [ ] Your game appears as a card on the home screen with the correct name and description.
 - [ ] Creating a new project opens the editor without errors.
 - [ ] Editing content, saving, closing, and re-opening round-trips correctly.
