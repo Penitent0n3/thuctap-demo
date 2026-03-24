@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CardItem, GameData } from "../types/objects";
+import type { CardItem, GameData, GameItem } from "../types/objects";
 
 // Helper function to shuffle array
 export const shuffleArray = <T,>(array: T[]): T[] => {
@@ -15,12 +15,18 @@ export const shuffleArray = <T,>(array: T[]): T[] => {
 export const calculateGridDimensions = (
   totalCards: number,
 ): { rows: number; cols: number } => {
-  const ratio = 4 / 3; // Width to height ratio preference
-  let cols = Math.ceil(Math.sqrt(totalCards * ratio));
+  // Tìm số cột và hàng tối ưu cho grid hình chữ nhật
+  let cols = Math.ceil(Math.sqrt(totalCards));
   let rows = Math.ceil(totalCards / cols);
 
-  // Adjust to make it more balanced
-  while (rows > cols * 1.5 && rows > 2) {
+  // Điều chỉnh để grid không quá dài
+  const targetRatio = 4 / 3; // Tỉ lệ chiều rộng/cao mong muốn
+  while (cols / rows > targetRatio && rows < cols) {
+    rows++;
+    cols = Math.ceil(totalCards / rows);
+  }
+
+  while (rows / cols > targetRatio && cols < rows) {
     cols++;
     rows = Math.ceil(totalCards / cols);
   }
@@ -28,39 +34,41 @@ export const calculateGridDimensions = (
   return { rows, cols };
 };
 
-// Generate cards from game data
+// Generate cards from game data với tùy chọn số lượng cặp cho từng item
 export const generateCards = (gameData: GameData): CardItem[] => {
-  let items = [...gameData.items];
-  const minPairs = gameData.minPairs || 8;
+  const minPairs = Math.max(gameData.minPairs || 8, 4); // Tối thiểu 4 cặp (8 thẻ)
+  const itemsList: GameItem[] = [];
 
-  // Ensure enough pairs
-  while (items.length < minPairs) {
-    items = [...items, ...gameData.items.slice(0, minPairs - items.length)];
-  }
-
-  // Create pairs
-  let pairs: { imageSrc: string; keyword: string }[] = [];
-  items.forEach((item) => {
-    pairs.push(item, item); // Create pair
+  // Xử lý từng item với số lượng cặp riêng
+  gameData.items.forEach((item) => {
+    const minItemPairs = item.minPairs || 1;
+    // Thêm số lượng cặp theo yêu cầu tối thiểu của item
+    for (let i = 0; i < minItemPairs; i++) {
+      itemsList.push({ ...item });
+    }
   });
 
-  // Adjust to make grid rectangular
-  const totalCards = pairs.length;
-  const { rows, cols } = calculateGridDimensions(totalCards);
-  const targetTotal = rows * cols;
-
-  if (targetTotal > totalCards) {
-    const extraNeeded = targetTotal - totalCards;
-    for (let i = 0; i < extraNeeded; i++) {
-      const randomItem = items[i % items.length];
-      pairs.push(randomItem, randomItem);
+  // Nếu chưa đủ minPairs, thêm các item khác vào
+  let currentPairs = itemsList.length;
+  while (currentPairs < minPairs) {
+    const remainingNeeded = minPairs - currentPairs;
+    for (let i = 0; i < remainingNeeded && i < gameData.items.length; i++) {
+      itemsList.push({ ...gameData.items[i] });
+      currentPairs++;
     }
   }
 
-  // Shuffle and create cards
+  // Tạo pairs cho mỗi item
+  let pairs: { imageSrc: string; keyword: string }[] = [];
+  itemsList.forEach((item) => {
+    pairs.push({ imageSrc: item.imageSrc, keyword: item.keyword });
+    pairs.push({ imageSrc: item.imageSrc, keyword: item.keyword }); // Tạo cặp
+  });
+
+  // Shuffle và tạo cards
   const shuffledPairs = shuffleArray(pairs);
   return shuffledPairs.map((pair, index) => ({
-    id: `${index}-${Date.now()}`,
+    id: `${index}-${Date.now()}-${Math.random()}`,
     imageSrc: pair.imageSrc,
     keyword: pair.keyword,
     isFlipped: false,

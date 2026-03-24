@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { GameState, GameData, CardItem } from "../types/objects";
 import {
   generateCards,
@@ -25,7 +25,6 @@ const MatchingGame: React.FC = () => {
   const [isGameComplete, setIsGameComplete] = useState(false);
   const [gridDimensions, setGridDimensions] = useState({ rows: 0, cols: 0 });
 
-  const windowSize = useWindowSize();
   const gridRef = useRef<HTMLDivElement>(null);
   const { tiltStyle, handleMouseMove, handleMouseLeave } =
     useTiltEffect(gridRef);
@@ -40,7 +39,7 @@ const MatchingGame: React.FC = () => {
   // Initialize game
   useEffect(() => {
     const newCards = generateCards(gameData);
-    const totalPairs = newCards.filter((card) => !card.isMatched).length / 2;
+    const totalPairs = newCards.length / 2;
 
     setGameState((prev) => ({
       ...prev,
@@ -118,7 +117,6 @@ const MatchingGame: React.FC = () => {
       const isMatch = selectedCard.imageSrc === clickedCard.imageSrc;
 
       if (isMatch) {
-        // Match found
         showMessage("success", "Great match! 🎉");
 
         setTimeout(() => {
@@ -135,7 +133,6 @@ const MatchingGame: React.FC = () => {
           }));
         }, 500);
       } else {
-        // Match failed
         showMessage("error", "Try again! 😢");
 
         setTimeout(() => {
@@ -162,39 +159,14 @@ const MatchingGame: React.FC = () => {
       selectedCardId: null,
       lockBoard: false,
       matchedCount: 0,
-      totalPairs: newCards.filter((card) => !card.isMatched).length / 2,
+      totalPairs: newCards.length / 2,
       message: { type: null, text: "" },
     });
     setIsGameComplete(false);
   }, [gameData]);
 
-  // Calculate card size based on container - CẢI THIỆN ĐỂ CHIẾM HẾT KHÔNG GIAN
-  const cardSize = useMemo(() => {
-    if (!gridRef.current || gridDimensions.rows === 0) return 120;
-    const container = gridRef.current.parentElement?.parentElement;
-    if (!container) return 120;
-
-    // Lấy kích thước container thực tế
-    const containerRect = container.getBoundingClientRect();
-    const availableWidth = containerRect.width - 32; // trừ padding
-    const availableHeight = containerRect.height - 32; // trừ padding
-
-    const cardWidth = availableWidth / gridDimensions.cols;
-    const cardHeight = availableHeight / gridDimensions.rows;
-
-    // Trừ gap (gap-3 = 12px)
-    const gap = 12;
-    const cardWidthWithGap =
-      (availableWidth - gap * (gridDimensions.cols - 1)) / gridDimensions.cols;
-    const cardHeightWithGap =
-      (availableHeight - gap * (gridDimensions.rows - 1)) / gridDimensions.rows;
-
-    const size = Math.min(cardWidthWithGap, cardHeightWithGap, 200);
-    return Math.max(size, 80); // tối thiểu 80px
-  }, [windowSize, gridDimensions]);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400">
       {/* Game Container */}
       <div className="container mx-auto px-4 py-6 h-screen flex flex-col lg:flex-row gap-6">
         {/* HUD Section */}
@@ -281,43 +253,41 @@ const MatchingGame: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Game Grid Section - CẢI THIỆN ĐỂ CHIẾM HẾT KHÔNG GIAN */}
-        <div className="flex-1 flex items-center justify-center perspective-1000">
-          <div
-            className="w-full h-full flex items-center justify-center"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+        {/* Game Grid Section - Sử dụng CSS Grid với auto-fit */}
+        <div
+          className="flex-1 flex items-center justify-center perspective-1000 overflow-auto"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          <motion.div
+            ref={gridRef}
+            style={{
+              ...tiltStyle,
+              transformStyle: "preserve-3d",
+            }}
+            className="w-full h-full flex items-center justify-center p-4"
           >
-            <motion.div
-              ref={gridRef}
+            <div
+              className="grid gap-3 p-4 bg-white/20 backdrop-blur rounded-3xl shadow-2xl w-full h-full"
               style={{
-                ...tiltStyle,
-                transformStyle: "preserve-3d",
+                gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(80px, 1fr))`,
+                gridTemplateRows: `repeat(${gridDimensions.rows}, minmax(80px, 1fr))`,
+                maxWidth: `min(100%, ${gridDimensions.cols * 180}px)`,
+                maxHeight: `min(100%, ${gridDimensions.rows * 180}px)`,
               }}
-              className="relative w-full h-full flex items-center justify-center"
             >
-              <div
-                className="grid gap-3 p-4 bg-white/20 backdrop-blur rounded-3xl shadow-2xl"
-                style={{
-                  gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(${cardSize}px, ${cardSize}px))`,
-                  gridTemplateRows: `repeat(${gridDimensions.rows}, minmax(${cardSize}px, ${cardSize}px))`,
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
-              >
-                {gameState.cards.map((card) => (
-                  <Card
-                    key={card.id}
-                    item={card}
-                    isFlipped={card.isFlipped}
-                    isMatched={card.isMatched}
-                    cardBack={gameData.cardBackImage || "🎴"}
-                    onClick={() => handleCardClick(card)}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </div>
+              {gameState.cards.map((card) => (
+                <Card
+                  key={card.id}
+                  item={card}
+                  isFlipped={card.isFlipped}
+                  isMatched={card.isMatched}
+                  cardBack={gameData.cardBackImage || "🎴"}
+                  onClick={() => handleCardClick(card)}
+                />
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 

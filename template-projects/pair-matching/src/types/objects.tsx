@@ -1,5 +1,6 @@
 // --- Định nghĩa kiểu dữ liệu ---
 // types.ts
+// --- Định nghĩa kiểu dữ liệu ---
 export interface CardItem {
   id: string;
   imageSrc: string;
@@ -8,12 +9,15 @@ export interface CardItem {
   isMatched: boolean;
 }
 
+export interface GameItem {
+  imageSrc: string;
+  keyword: string;
+  minPairs?: number; // Số cặp tối thiểu cho item này
+}
+
 export interface GameData {
-  items: {
-    imageSrc: string;
-    keyword: string;
-  }[];
-  minPairs?: number;
+  items: GameItem[];
+  minPairs?: number; // Tổng số cặp tối thiểu
   cardBackImage?: string;
 }
 

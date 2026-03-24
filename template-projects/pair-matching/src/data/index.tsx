@@ -2,16 +2,19 @@ import type { GameData } from "../types/objects";
 
 const defaultGameData: GameData = {
   items: [
-    { imageSrc: "🐶", keyword: "DOG" },
-    { imageSrc: "🐱", keyword: "CAT" },
-    { imageSrc: "🐭", keyword: "MOUSE" },
-    { imageSrc: "🐹", keyword: "HAMSTER" },
-    { imageSrc: "🐰", keyword: "RABBIT" },
-    { imageSrc: "🦊", keyword: "FOX" },
+    { imageSrc: "🐶", keyword: "DOG", minPairs: 2 },
+    { imageSrc: "🐱", keyword: "CAT", minPairs: 2 },
+    { imageSrc: "🐭", keyword: "MOUSE", minPairs: 1 },
+    { imageSrc: "🐹", keyword: "HAMSTER", minPairs: 1 },
+    { imageSrc: "🐰", keyword: "RABBIT", minPairs: 1 },
+    { imageSrc: "🦊", keyword: "FOX", minPairs: 1 },
+    { imageSrc: "🐻", keyword: "BEAR", minPairs: 1 },
+    { imageSrc: "🐼", keyword: "PANDA", minPairs: 1 },
   ],
-  minPairs: 8,
+  minPairs: 12,
   cardBackImage: "🎴",
 };
+
 // --- Dữ liệu mẫu ---
 export const MY_APP_DATA: GameData =
   import.meta.env.PROD &&
