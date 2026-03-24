@@ -22,16 +22,20 @@ const GroupColumn: React.FC<GroupColumnProps> = ({ group, items }) => {
           className="w-24 h-24 object-contain"
         />
         <h3 className="mt-2 text-xl font-bold text-blue-800">{group.name}</h3>
+        <span className="text-sm text-blue-600 mt-1">
+          {items.length} item{items.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       <div className="flex-1 w-full p-4 overflow-y-auto flex flex-col items-center gap-4">
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {items.map((item) => (
             <motion.div
               key={item.id}
               layoutId={item.id}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
               transition={layoutTransition}
               className="w-32 h-32 shrink-0 flex items-center justify-center border-4 border-green-400 bg-white rounded-2xl shadow"
             >
