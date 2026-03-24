@@ -101,11 +101,12 @@ export const useTiltEffect = (ref: React.RefObject<HTMLElement | null>) => {
     const x = (e.clientX - left) / width;
     const y = (e.clientY - top) / height;
 
-    const rotateX = (y - 0.5) * 20;
-    const rotateY = (x - 0.5) * 20;
+    // Giảm biên độ tilt từ 20 xuống 8
+    const rotateX = (y - 0.5) * 8;
+    const rotateY = (x - 0.5) * 8;
 
     setTiltStyle({
-      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`,
       transition: "transform 0.1s ease-out",
     });
   };

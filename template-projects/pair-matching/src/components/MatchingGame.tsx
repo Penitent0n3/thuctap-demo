@@ -8,6 +8,7 @@ import {
   useTiltEffect,
 } from "../utils";
 import { MY_APP_DATA } from "../data";
+import { Card } from "./Card";
 
 // Main Game Component
 const MatchingGame: React.FC = () => {
@@ -167,19 +168,29 @@ const MatchingGame: React.FC = () => {
     setIsGameComplete(false);
   }, [gameData]);
 
-  // Calculate card size based on container
+  // Calculate card size based on container - CẢI THIỆN ĐỂ CHIẾM HẾT KHÔNG GIAN
   const cardSize = useMemo(() => {
     if (!gridRef.current || gridDimensions.rows === 0) return 120;
-    const container = gridRef.current.parentElement;
+    const container = gridRef.current.parentElement?.parentElement;
     if (!container) return 120;
 
-    const maxHeight = windowSize.height * 0.6;
-    const maxWidth = windowSize.width * 0.7;
+    // Lấy kích thước container thực tế
+    const containerRect = container.getBoundingClientRect();
+    const availableWidth = containerRect.width - 32; // trừ padding
+    const availableHeight = containerRect.height - 32; // trừ padding
 
-    const cardHeight = maxHeight / gridDimensions.rows;
-    const cardWidth = maxWidth / gridDimensions.cols;
+    const cardWidth = availableWidth / gridDimensions.cols;
+    const cardHeight = availableHeight / gridDimensions.rows;
 
-    return Math.min(cardHeight, cardWidth, 150);
+    // Trừ gap (gap-3 = 12px)
+    const gap = 12;
+    const cardWidthWithGap =
+      (availableWidth - gap * (gridDimensions.cols - 1)) / gridDimensions.cols;
+    const cardHeightWithGap =
+      (availableHeight - gap * (gridDimensions.rows - 1)) / gridDimensions.rows;
+
+    const size = Math.min(cardWidthWithGap, cardHeightWithGap, 200);
+    return Math.max(size, 80); // tối thiểu 80px
   }, [windowSize, gridDimensions]);
 
   return (
@@ -270,97 +281,43 @@ const MatchingGame: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Game Grid Section */}
-        <div
-          className="flex-1 flex items-center justify-center perspective-1000"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          <motion.div
-            ref={gridRef}
-            style={{
-              ...tiltStyle,
-              transformStyle: "preserve-3d",
-            }}
-            className="relative"
+        {/* Game Grid Section - CẢI THIỆN ĐỂ CHIẾM HẾT KHÔNG GIAN */}
+        <div className="flex-1 flex items-center justify-center perspective-1000">
+          <div
+            className="w-full h-full flex items-center justify-center"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
           >
-            <div
-              className="grid gap-3 p-4 bg-white/20 backdrop-blur rounded-3xl shadow-2xl"
+            <motion.div
+              ref={gridRef}
               style={{
-                gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(${cardSize}px, ${cardSize}px))`,
-                gridTemplateRows: `repeat(${gridDimensions.rows}, minmax(${cardSize}px, ${cardSize}px))`,
+                ...tiltStyle,
+                transformStyle: "preserve-3d",
               }}
+              className="relative w-full h-full flex items-center justify-center"
             >
-              <AnimatePresence>
+              <div
+                className="grid gap-3 p-4 bg-white/20 backdrop-blur rounded-3xl shadow-2xl"
+                style={{
+                  gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(${cardSize}px, ${cardSize}px))`,
+                  gridTemplateRows: `repeat(${gridDimensions.rows}, minmax(${cardSize}px, ${cardSize}px))`,
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
                 {gameState.cards.map((card) => (
-                  <motion.div
+                  <Card
                     key={card.id}
-                    initial={{ rotateY: 0, scale: 1 }}
-                    animate={{
-                      rotateY: card.isFlipped || card.isMatched ? 180 : 0,
-                      scale: card.isMatched ? 0 : 1,
-                    }}
-                    exit={{ scale: 0 }}
-                    transition={{
-                      duration: 0.4,
-                      type: "spring",
-                      stiffness: 200,
-                    }}
-                    whileHover={{ scale: card.isMatched ? 0 : 1.05 }}
+                    item={card}
+                    isFlipped={card.isFlipped}
+                    isMatched={card.isMatched}
+                    cardBack={gameData.cardBackImage || "🎴"}
                     onClick={() => handleCardClick(card)}
-                    className={`relative cursor-pointer rounded-xl shadow-lg ${
-                      card.isMatched ? "pointer-events-none" : ""
-                    }`}
-                    style={{
-                      width: cardSize,
-                      height: cardSize,
-                      transformStyle: "preserve-3d",
-                    }}
-                  >
-                    {/* Card Front */}
-                    <div
-                      className={`absolute inset-0 rounded-xl flex items-center justify-center text-4xl font-bold
-                        bg-gradient-to-br from-yellow-400 to-orange-500 backface-hidden
-                        shadow-inner border-4 border-white`}
-                      style={{ transform: "rotateY(0deg)" }}
-                    >
-                      {gameData.cardBackImage || "🎴"}
-                    </div>
-
-                    {/* Card Back */}
-                    <div
-                      className={`absolute inset-0 rounded-xl flex items-center justify-center
-                        bg-gradient-to-br from-blue-500 to-purple-600 backface-hidden
-                        shadow-inner border-4 border-white`}
-                      style={{
-                        transform: "rotateY(180deg)",
-                        backgroundImage: card.imageSrc.startsWith("http")
-                          ? `url(${card.imageSrc})`
-                          : "none",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      {!card.imageSrc.startsWith("http") && (
-                        <div className="text-5xl">{card.imageSrc}</div>
-                      )}
-                      {card.isMatched && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center"
-                        >
-                          <div className="text-white font-bold text-xl">
-                            {card.keyword}
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-                  </motion.div>
+                  />
                 ))}
-              </AnimatePresence>
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
 

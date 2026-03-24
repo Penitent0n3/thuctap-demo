@@ -15,6 +15,7 @@ const defaultGameData: GameData = {
 // --- Dữ liệu mẫu ---
 export const MY_APP_DATA: GameData =
   import.meta.env.PROD &&
+  typeof window !== "undefined" &&
   (window as Window & typeof globalThis & { MY_APP_DATA: GameData })[
     "MY_APP_DATA"
   ]
