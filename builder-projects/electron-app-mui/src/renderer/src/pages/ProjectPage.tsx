@@ -33,11 +33,10 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SettingsPanel from '../components/SettingsPanel'
-import WordSearchEditor from '../components/WordSearchEditor'
 import { useSettings } from '../context/SettingsContext'
 import { GAME_REGISTRY } from '../games/registry'
 import { useHistory } from '../hooks/useHistory'
-import { AnyAppData, GameTemplate, ProjectFile, ProjectMeta, WordSearchAppData } from '../types'
+import { AnyAppData, GameTemplate, ProjectFile, ProjectMeta } from '../types'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function buildTitle(templateName: string, projectName: string, filePath: string) {
@@ -54,13 +53,6 @@ function buildProjectFile(meta: ProjectMeta, appData: AnyAppData): ProjectFile {
     settings: meta.settings,
     appData
   }
-}
-
-function normalizeWordSearchData(appData: AnyAppData): WordSearchAppData | null {
-  if (!('items' in appData) || !('gridSize' in appData) || !('backgroundImagePath' in appData)) {
-    return null
-  }
-  return appData as WordSearchAppData
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -306,15 +298,6 @@ export default function ProjectPage() {
   }
 
   const templateName = templates.find((t) => t.id === templateId)?.name ?? templateId
-  const wordSearchData = templateId === 'word-search' ? normalizeWordSearchData(history.present) : null
-  const wordSearchValidWords =
-    wordSearchData?.items.filter((item) => item.word.trim()).length ?? 0
-  const wordSearchDuplicateCount = wordSearchData
-    ? wordSearchData.items.filter((item, index, arr) => {
-        const normalized = item.word.trim()
-        return normalized && arr.findIndex((candidate) => candidate.word.trim() === normalized) !== index
-      }).length
-    : 0
   const autoSaveLabel =
     resolved.autoSave.mode === 'off'
       ? null
@@ -353,33 +336,18 @@ export default function ProjectPage() {
         />
 
         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-          <Box sx={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {meta.name}
-            </Typography>
-            {templateId === 'word-search' && (
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                Build a word puzzle with clue images, then export a playable folder.
-              </Typography>
-            )}
-          </Box>
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {meta.name}
+          </Typography>
           <Tooltip title="Rename project">
             <IconButton
               size="small"
@@ -463,56 +431,6 @@ export default function ProjectPage() {
       </Box>
 
       {/* ── Editor ── */}
-      {templateId === 'word-search' && wordSearchData && (
-        <Box
-          sx={{
-            px: 3,
-            py: 1.25,
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            background:
-              'linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(110,231,183,0.06) 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
-            flexWrap: 'wrap'
-          }}
-        >
-          <Box>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              Word Search Workspace
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Tip: drop an image on Add Word to create a clue card faster.
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
-            <Chip
-              size="small"
-              color={wordSearchValidWords === 0 ? 'warning' : 'primary'}
-              label={`${wordSearchValidWords} word${wordSearchValidWords !== 1 ? 's' : ''}`}
-            />
-            <Chip
-              size="small"
-              variant="outlined"
-              label={`grid ${wordSearchData.gridSize}x${wordSearchData.gridSize}`}
-            />
-            <Chip
-              size="small"
-              variant="outlined"
-              label={wordSearchData.backgroundImagePath ? 'background ready' : 'no background'}
-            />
-            {wordSearchDuplicateCount > 0 && (
-              <Chip
-                size="small"
-                color="warning"
-                label={`${wordSearchDuplicateCount} duplicate${wordSearchDuplicateCount !== 1 ? 's' : ''}`}
-              />
-            )}
-          </Box>
-        </Box>
-      )}
-
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {(() => {
           const entry = GAME_REGISTRY[templateId]
@@ -548,28 +466,14 @@ export default function ProjectPage() {
           <ListItemIcon>
             <DriveFileMoveIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText
-            primary="Export to folder"
-            secondary={
-              templateId === 'word-search'
-                ? 'Creates a playable word-search folder with image clues'
-                : 'Copies game + assets'
-            }
-          />
+          <ListItemText primary="Export to folder" secondary="Copies game + assets" />
         </MenuItem>
         <Divider />
         <MenuItem onClick={() => handleExport('zip')}>
           <ListItemIcon>
             <FolderZipIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText
-            primary="Export as ZIP"
-            secondary={
-              templateId === 'word-search'
-                ? 'Packages the word-search game into one archive'
-                : 'Single archive'
-            }
-          />
+          <ListItemText primary="Export as ZIP" secondary="Single archive" />
         </MenuItem>
       </Menu>
 
