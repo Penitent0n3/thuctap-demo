@@ -3,7 +3,13 @@ export interface GameTemplate {
   id: string
   name: string
   description: string
-  gameType: 'group-sort' | 'plane-quiz' | 'balloon-letter-picker' | 'pair-matching' | string
+  gameType:
+    | 'group-sort'
+    | 'plane-quiz'
+    | 'balloon-letter-picker'
+    | 'pair-matching'
+    | 'word-search'
+    | string
   version: string
   thumbnailUrl: string | null // file:// URL resolved by main process, or null
 }
@@ -73,11 +79,24 @@ export interface PairMatchingAppData {
   _itemCounter: number
 }
 
+// ── Word Search ───────────────────────────────────────────────────────────────
+export interface WordSearchItem {
+  id: string
+  word: string
+  imagePath: string | null
+}
+export interface WordSearchAppData {
+  items: WordSearchItem[]
+  backgroundImagePath?: string | null
+  _itemCounter: number
+}
+
 export type AnyAppData =
   | GroupSortAppData
   | QuizAppData
   | BalloonLetterPickerAppData
   | PairMatchingAppData
+  | WordSearchAppData
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 export type AutoSaveMode = 'off' | 'on-edit' | 'interval'

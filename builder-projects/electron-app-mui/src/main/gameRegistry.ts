@@ -139,6 +139,26 @@ export const GAME_DATA_TRANSFORMS: Record<string, DataTransform> = {
       cardBackImage: data.cardBackImage,
       items
     })
+  },
+
+  // Word Search
+  'word-search': (appData) => {
+    // Template expects:
+    // { items: { word: string, image: string }[], background?: string }
+    const data = appData as {
+      items?: { id: string; word: string; imagePath: string | null }[]
+      backgroundImagePath?: string | null
+    }
+
+    const items = (data.items ?? []).map(({ word, imagePath }) => ({
+      word,
+      image: imagePath // rename imagePath to image
+    }))
+
+    return omitInternalKeys({
+      items,
+      background: data.backgroundImagePath ?? undefined
+    })
   }
 }
 

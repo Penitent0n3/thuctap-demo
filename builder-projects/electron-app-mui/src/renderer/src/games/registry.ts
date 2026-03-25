@@ -16,6 +16,7 @@ import BalloonLetterPickerEditor from './balloon-letter-picker/BalloonLetterPick
 import GroupSortEditor from './group-sort/GroupSortEditor'
 import PairMatchingEditor from './pair-matching/PairMatchingEditor'
 import QuizEditor from './plane-quiz/QuizEditor'
+import WordSearchEditor from './word-search/WordSearchEditor'
 
 export interface GameRegistryEntry {
   /** Editor component rendered on the ProjectPage */
@@ -61,6 +62,14 @@ export const GAME_REGISTRY: Record<string, GameRegistryEntry> = {
     createInitialData: () => ({
       items: [],
       minTotalPairs: 2,
+      _itemCounter: 0
+    })
+  },
+
+  'word-search': {
+    Editor: WordSearchEditor as GameRegistryEntry['Editor'],
+    createInitialData: () => ({
+      items: [],
       _itemCounter: 0
     })
   }
