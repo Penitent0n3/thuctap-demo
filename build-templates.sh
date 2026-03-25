@@ -55,7 +55,8 @@ build_game() {
   # Copy dist -> builder templates/<game_id>/game/
   info "Copying dist -> $target_dir"
   mkdir -p "$target_dir"
-  cp -r "$abs_project/dist/." "$target_dir/"
+  rm -rv "$target_dir/"
+  cp -rv "$abs_project/dist/." "$target_dir/"
 
   ok "Done: $game_id"
 }
