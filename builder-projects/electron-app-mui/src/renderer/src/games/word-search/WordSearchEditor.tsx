@@ -3,15 +3,15 @@ import CollectionsIcon from '@mui/icons-material/Collections'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Alert, Box, Button, Collapse, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import { useEditorShortcuts } from '@renderer/hooks/useEditorShortcuts'
 import { useCallback, useState } from 'react'
 import {
-  AtoZWordField,
-  EmptyState,
-  FileDropTarget,
-  IndexBadge,
-  SidebarTab,
-  StickyHeader,
-  useEditorShortcuts
+    AtoZWordField,
+    EmptyState,
+    FileDropTarget,
+    IndexBadge,
+    SidebarTab,
+    StickyHeader
 } from '../../components/EditorShared'
 import ImagePicker from '../../components/ImagePicker'
 import { useSettings } from '../../context/SettingsContext'
