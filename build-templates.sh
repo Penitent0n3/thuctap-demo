@@ -23,6 +23,7 @@ GAMES=(
   "template-projects/balloon-letter-picker|balloon-letter-picker"
   "template-projects/pair-matching|pair-matching"
   "template-projects/word-search|word-search"
+  "template-projects/whack-a-mole|whack-a-mole"
   # "template-projects/my-new-game|my-new-game"
 )
 
