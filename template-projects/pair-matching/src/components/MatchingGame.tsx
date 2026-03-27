@@ -4,6 +4,7 @@ import type { GameConfig, CardState } from "../types/objects";
 import { buildDeck, getOptimalGrid } from "../utils";
 import Card from "./Card";
 import { HUD } from "./HUD";
+import MascotBanner from "./MascotBanner";
 import WellDoneScreen from "./WellDoneScreen";
 import { MY_APP_DATA } from "../data";
 
@@ -55,18 +56,24 @@ export default function MatchingGame() {
 
   // Compute card size to fill available space
   // Proportional UI Scale
+  const isNarrow = useMemo(() => {
+    return window.innerWidth / window.innerHeight < 0.72;
+  }, []);
+
   const uiScale = useMemo(() => {
     if (isLandscape) {
-      // Landscape: base on 768px height
-      return Math.max(window.innerHeight / 768, 0.8);
+      // Landscape: base on a larger height to avoid over-scaling
+      return Math.min(Math.max(window.innerHeight / 850, 0.8), 1.25);
     } else {
-      // Portrait: base on 380px width (typical mobile)
-      return Math.max(window.innerWidth / 380, 0.85);
+      // Portrait: higher floor for visibility
+      const base = isNarrow ? 380 : 440;
+      return Math.min(Math.max(window.innerWidth / base, 0.95), 1.4);
     }
-  }, [isLandscape]);
+  }, [isLandscape, isNarrow]);
 
   // Compute card size to fill available space
-  const GAP = 12 * uiScale;
+  // Reduced base GAP for tighter look on small screens
+  const GAP = Math.min(10 * uiScale, 18);
   const cardSize = useMemo(() => {
     if (!containerSize.w || !containerSize.h) return 80;
     const maxByCols = Math.floor(
@@ -166,25 +173,27 @@ export default function MatchingGame() {
         fontFamily: "'Nunito', 'Comic Sans MS', cursive, sans-serif",
         flexDirection: isLandscape ? "row" : "column",
         alignItems: "center",
-        justifyContent: "center",
-        gap: 30 * uiScale,
+        justifyContent: isLandscape ? "center" : "flex-start",
+        paddingTop: isLandscape ? 0 : 20 * uiScale,
+        gap: isLandscape ? 40 * uiScale : 20 * uiScale,
       }}
     >
-      {/* HUD Panel */}
+      {/* HUD Panel - centered horizontally in its slot */}
       <div
-        className="shrink-0 flex items-center relative"
+        className="shrink-0 flex items-center relative transition-all duration-300"
         style={
           isLandscape
             ? {
-                width: 300 * uiScale,
-                height: "90%",
+                flex: "1 1 200px",
+                maxWidth: 400 * uiScale,
+                height: "85%",
                 flexDirection: "column",
                 justifyContent: "flex-start",
               }
             : {
                 width: "95%",
                 height: "auto",
-                flexDirection: "row",
+                flexDirection: isNarrow ? "column" : "row",
               }
         }
       >
@@ -196,16 +205,24 @@ export default function MatchingGame() {
           onRestart={restart}
           isLandscape={isLandscape}
           uiScale={uiScale}
+          isNarrow={isNarrow}
+        />
+
+        {/* Mascot Banner: Attached to HUD container for alignment */}
+        <MascotBanner
+          state={mascotState}
+          uiScale={uiScale}
+          isLandscape={isLandscape}
         />
       </div>
 
       <div
         ref={containerRef}
-        className="flex items-center justify-center overflow-hidden"
+        className="shrink flex items-center justify-center overflow-hidden"
         style={{
-          width: isLandscape ? "70vw" : "95vw",
+          width: isLandscape ? "min(65vw, " + (gridW + 40) + "px)" : "95vw",
           height: isLandscape ? "90vh" : "60vh",
-          padding: 10 * uiScale,
+          padding: 8 * uiScale,
         }}
       >
         <motion.div
@@ -217,9 +234,8 @@ export default function MatchingGame() {
             gridTemplateRows: `repeat(${grid.rows}, ${cardSize}px)`,
             gap: GAP,
           }}
-          initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           {cards.map((card) => (
             <Card

@@ -17,4 +17,5 @@ export interface HUDProps {
   onRestart: () => void;
   isLandscape: boolean;
   uiScale: number;
+  isNarrow: boolean;
 }

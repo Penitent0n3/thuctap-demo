@@ -1,110 +1,119 @@
 import { motion } from "framer-motion";
 import type { HUDProps } from "../types/components";
-import MascotBanner from "./MascotBanner";
 
 export function HUD({
   moves,
   matched,
   total,
-  mascotState,
   onRestart,
   isLandscape,
   uiScale,
+  isNarrow,
 }: HUDProps) {
   const progress = total > 0 ? matched / total : 0;
   const baseGap = 16 * uiScale;
 
-  if (isLandscape) {
+  // LANDSCAPE or NARROW PORTRAIT: Vertical Stack
+  if (isLandscape || isNarrow) {
     return (
       <div
         className="flex flex-col items-stretch w-full"
-        style={{ gap: baseGap, paddingTop: 20 * uiScale }}
+        style={{
+          gap: (isNarrow ? 14 : 20) * uiScale,
+          paddingTop: isLandscape ? 20 * uiScale : 0,
+        }}
       >
-        <MascotBanner state={mascotState} uiScale={uiScale} isLandscape={true} />
-
         {/* Title */}
         <motion.h2
-          className="font-black text-transparent bg-clip-text text-center"
+          className="font-black text-transparent bg-clip-text text-center shrink-0"
           style={{
             backgroundImage: "linear-gradient(90deg, #a78bfa, #60a5fa)",
-            fontSize: 28 * uiScale,
+            fontSize: (isNarrow ? 24 : 32) * uiScale,
           }}
         >
-          🃏 Matching
+          {isNarrow ? "🃏 Pair Match" : "🃏 Matching"}
         </motion.h2>
 
         {/* Stats */}
         <div className="flex flex-col" style={{ gap: baseGap * 0.75 }}>
-          <StatBox label="Lượt đi" value={moves} uiScale={uiScale} />
+          <StatBox
+            label="Lượt đi"
+            value={moves}
+            uiScale={uiScale}
+            compact={isNarrow}
+          />
           <StatBox
             label="Đã ghép"
             value={`${matched}/${total}`}
             uiScale={uiScale}
             color="emerald"
+            compact={isNarrow}
           />
         </div>
 
         {/* Progress */}
         <div className="w-full">
-          <ProgressBar progress={progress} uiScale={uiScale} />
+          <ProgressBar
+            progress={progress}
+            uiScale={uiScale}
+            hideLabel={isNarrow}
+            chunky
+          />
         </div>
 
         {/* Instructions */}
-        <Instructions uiScale={uiScale} />
+        <Instructions uiScale={uiScale} compact={isNarrow} />
 
         {/* Restart */}
-        <div className="flex justify-center mt-4">
-          <RestartButton onClick={onRestart} uiScale={uiScale} />
+        <div className="flex justify-center mt-2">
+          <RestartButton
+            onClick={onRestart}
+            uiScale={uiScale}
+            iconOnly={isNarrow}
+            large={!isNarrow}
+          />
         </div>
       </div>
     );
   }
 
-  // PORTRAIT: 2 Row Grid
+  // STANDARD PORTRAIT: 2 Row Grid (Flexible heights to use more screen)
   return (
     <div
       className="flex flex-col w-full"
-      style={{ gap: baseGap * 0.75, padding: 10 * uiScale }}
+      style={{ gap: 20 * uiScale, padding: 8 * uiScale }}
     >
-      <MascotBanner state={mascotState} uiScale={uiScale} isLandscape={false} />
-
       {/* Row 1: Title, Progress, Restart (icon) */}
       <div className="flex items-center" style={{ gap: baseGap }}>
         <motion.h2
           className="font-black text-transparent bg-clip-text shrink-0"
           style={{
             backgroundImage: "linear-gradient(90deg, #a78bfa, #60a5fa)",
-            fontSize: 22 * uiScale,
+            fontSize: 28 * uiScale,
           }}
         >
           🃏
         </motion.h2>
 
         <div className="flex-1">
-          <ProgressBar progress={progress} uiScale={uiScale} hideLabel />
+          <ProgressBar progress={progress} uiScale={uiScale} hideLabel chunky />
         </div>
 
-        <RestartButton onClick={onRestart} uiScale={uiScale} iconOnly />
+        <RestartButton onClick={onRestart} uiScale={uiScale} iconOnly large />
       </div>
 
       {/* Row 2: Stats and Instructions */}
       <div className="flex items-stretch" style={{ gap: baseGap }}>
-        <div className="flex flex-row flex-1" style={{ gap: baseGap * 0.5 }}>
-          <StatBox
-            label="Lượt"
-            value={moves}
-            uiScale={uiScale}
-            compact
-          />
+        <div className="flex flex-row flex-1" style={{ gap: baseGap * 0.75 }}>
+          <StatBox label="Lượt" value={moves} uiScale={uiScale} />
           <StatBox
             label="Ghép"
             value={`${matched}/${total}`}
             uiScale={uiScale}
             color="emerald"
-            compact
           />
         </div>
-        <div className="flex-[1.5]">
+        <div className="flex-[1.2]">
           <Instructions uiScale={uiScale} />
         </div>
       </div>
@@ -162,17 +171,19 @@ function ProgressBar({
   progress,
   uiScale,
   hideLabel,
+  chunky = false,
 }: {
   progress: number;
   uiScale: number;
   hideLabel?: boolean;
+  chunky?: boolean;
 }) {
   return (
     <div className="w-full">
       {!hideLabel && (
         <div
           className="text-purple-300 mb-1 font-semibold text-center"
-          style={{ fontSize: 12 * uiScale }}
+          style={{ fontSize: (chunky ? 14 : 12) * uiScale }}
         >
           Tiến độ
         </div>
@@ -181,7 +192,7 @@ function ProgressBar({
         className="rounded-full overflow-hidden"
         style={{
           background: "rgba(255,255,255,0.1)",
-          height: 12 * uiScale,
+          height: (chunky ? 22 : 12) * uiScale,
           width: "100%",
         }}
       >
@@ -196,13 +207,19 @@ function ProgressBar({
   );
 }
 
-function Instructions({ uiScale }: { uiScale: number }) {
+function Instructions({
+  uiScale,
+  compact = false,
+}: {
+  uiScale: number;
+  compact?: boolean;
+}) {
   return (
     <div
       className="rounded-xl leading-relaxed text-center flex items-center justify-center h-full"
       style={{
-        padding: 10 * uiScale,
-        fontSize: 12 * uiScale,
+        padding: (compact ? 8 : 10) * uiScale,
+        fontSize: (compact ? 11 : 12) * uiScale,
         background: "rgba(255,255,255,0.05)",
         border: `${1 * uiScale}px solid rgba(167,139,250,0.15)`,
         color: "#e9d5ff",
@@ -217,10 +234,12 @@ function RestartButton({
   onClick,
   uiScale,
   iconOnly,
+  large = false,
 }: {
   onClick: () => void;
   uiScale: number;
   iconOnly?: boolean;
+  large?: boolean;
 }) {
   return (
     <motion.button
@@ -228,17 +247,21 @@ function RestartButton({
       className="font-bold text-white shadow-lg flex items-center justify-center shrink-0"
       style={{
         background: "linear-gradient(135deg, #6d28d9, #4c1d95)",
-        padding: iconOnly ? 10 * uiScale : `${10 * uiScale}px ${20 * uiScale}px`,
-        borderRadius: 12 * uiScale,
-        fontSize: 16 * uiScale,
-        gap: 8 * uiScale,
-        width: iconOnly ? 44 * uiScale : "auto",
-        height: iconOnly ? 44 * uiScale : "auto",
+        padding: iconOnly
+          ? 10 * uiScale
+          : `${(large ? 18 : 10) * uiScale}px ${(large ? 32 : 20) * uiScale}px`,
+        borderRadius: (large ? 20 : 12) * uiScale,
+        fontSize: (large ? 20 : 16) * uiScale,
+        gap: 12 * uiScale,
+        width: iconOnly ? (large ? 60 : 44) * uiScale : "auto",
+        height: iconOnly ? (large ? 60 : 44) * uiScale : "auto",
       }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <span style={{ fontSize: (iconOnly ? 20 : 18) * uiScale }}>🔄</span>
+      <span style={{ fontSize: (iconOnly ? (large ? 28 : 20) : 18) * uiScale }}>
+        🔄
+      </span>
       {!iconOnly && "Chơi lại"}
     </motion.button>
   );

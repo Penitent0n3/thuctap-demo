@@ -14,11 +14,11 @@ export default function MascotBanner({
     <AnimatePresence mode="wait">
       {state && state !== "idle" && (
         <div
-          className="fixed inset-0 pointer-events-none z-[100] flex items-end justify-center"
+          className="absolute inset-x-0 pointer-events-none z-[100] flex justify-center"
           style={{
-            paddingBottom: isLandscape ? 60 * uiScale : "min(75vh, 600px)",
+            bottom: isLandscape ? -20 * uiScale : "auto",
+            top: isLandscape ? "auto" : 40 * uiScale,
             alignItems: isLandscape ? "flex-end" : "flex-start",
-            paddingTop: isLandscape ? 0 : "20vh",
           }}
         >
           <motion.div
