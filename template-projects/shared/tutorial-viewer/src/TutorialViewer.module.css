@@ -1,29 +1,39 @@
 /* TutorialViewer.module.css - Locally scoped styles */
 
-.overlay {
+.dialog {
+  background: transparent;
+  border: none;
+  padding: 0;
+  /* Center the modal in the middle of the screen */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal {
   background: white;
   border-radius: 12px;
-  max-width: 90vw;
+  width: 90vw;
+  max-width: 800px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease-out;
+  margin: auto;
 }
 
 .header {
@@ -50,7 +60,9 @@
   padding: 4px 8px;
   color: #666;
   border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .closeButton:hover {
@@ -70,14 +82,69 @@
 }
 
 .image {
+  /* Image fits both dimensions without clipping */
   max-width: 100%;
   max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
 .loading {
   color: #666;
   font-size: 1rem;
+}
+
+.noImages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 200px;
+  color: #666;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.noImages p {
+  margin: 0;
+}
+
+.stepperContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.stepper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.step {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ddd;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.activeStep {
+  background-color: #007bff;
+  transform: scale(1.2);
+}
+
+.pageIndicator {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .controls {
@@ -88,6 +155,20 @@
   border-top: 1px solid #e5e5e5;
   background: #f8f9fa;
   gap: 16px;
+}
+
+/* Left side container that stays even when empty */
+.controlsLeft {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Right side container that always pushes to the right */
+.controlsRight {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .navButton {
@@ -109,14 +190,6 @@
 .navButton:disabled {
   background: #ccc;
   cursor: not-allowed;
-}
-
-.pageIndicator {
-  font-size: 0.95rem;
-  color: #666;
-  font-weight: 500;
-  min-width: 80px;
-  text-align: center;
 }
 
 @keyframes fadeIn {

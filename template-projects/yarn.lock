@@ -701,8 +701,8 @@ __metadata:
     vite-plugin-css-injected-by-js: "npm:^4.0.1"
     vite-plugin-dts: "npm:^4.5.0"
   peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
+    react: ">=19"
+    react-dom: ">=19"
   languageName: unknown
   linkType: soft
 
