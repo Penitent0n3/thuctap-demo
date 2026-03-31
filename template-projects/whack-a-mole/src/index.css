@@ -5,10 +5,11 @@
 }
 
 :root {
-  --moles-wid: clamp(6rem, 8vw, 20rem);
-  --moles-hei: clamp(8rem, 8vh, 14rem);
+  --moles-wid: clamp(7.5rem, 10vw, 20rem);
+  --moles-hei: clamp(4rem, 7vw, 8rem);
 
   font-size: 62.5%;
+  overflow: hidden;
 }
 
 body {
@@ -58,7 +59,7 @@ main {
 .row {
   display: grid;
   justify-content: center;
-  gap: 10rem;
+  gap: clamp(2rem, 6vw, 10rem);
 }
 
 /* 3 - 4 - 3 */
@@ -108,7 +109,7 @@ div.moles-hole.down.wrong {
   left: 50%;
   transform: translateX(-50%) translateY(-10px);
 
-  width: 200px;
+  width: clamp(10rem, 15vw, 20rem);
 
   background: white;
   padding: 0.8rem 1rem;
@@ -126,7 +127,7 @@ div.moles-hole.down.wrong {
 
 /* 👈 lệch trái */
 .row>div:nth-child(1) .mole-bubble {
-  transform: translateX(-90%) translateY(-10px);
+  transform: translateX(-83%) translateY(-10px);
 }
 
 .row.row-4>div:nth-child(2) .mole-bubble {
@@ -160,14 +161,14 @@ div.moles-hole.down.wrong {
 
 /* 📸 image */
 .mole-bubble img {
-  width: 50px;
-  height: 50px;
+  width: clamp(3rem, 5vw, 6rem);
+  height: clamp(3rem, 5vw, 6rem);
   object-fit: contain;
 }
 
 /* 📝 text */
 .mole-bubble div {
-  font-size: 2rem;
+  font-size: clamp(1rem, 2vw, 2rem);
   font-weight: bold;
   color: #333;
   text-align: center;
@@ -188,7 +189,7 @@ div.moles-hole.down.wrong {
 }
 
 .row>div:nth-child(1) .mole-bubble::after {
-  left: 85%;
+  left: 80%;
 }
 
 .row.row-3>div:nth-child(3) .mole-bubble::after {
@@ -207,7 +208,7 @@ div.moles-hole.down.wrong {
   left: 8%;
 }
 
-button {
+/* button {
   padding: 1.5rem;
   background-color: rgb(85, 65, 10);
   border: none;
@@ -225,7 +226,7 @@ button {
 
 button:hover {
   transform: scale(1.1);
-}
+} */
 
 @media (min-width: 1000px) {
   main {
@@ -349,7 +350,8 @@ button:hover {
 
 .sign-box {
   position: relative;
-  width: 700px;
+  width: 80vw;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -359,7 +361,8 @@ button:hover {
   background-position: bottom;
   background-repeat: no-repeat;
   width: 100%;
-  height: 200px;
+  aspect-ratio: 5 / 2;
+  max-height: 250px;
 }
 
 /* 👇 container nằm đè lên ảnh và căn giữa */
@@ -369,23 +372,22 @@ button:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
-  /* 👈 giúp không tràn */
+  width: 100%;
   text-align: center;
 }
 
 .sign-text {
   flex: 1;
-  font-size: 32px;
+  font-size: clamp(1.5rem, 4vw, 3rem);
   font-weight: bold;
   color: #ffffff;
 }
 
 .sign-box .question-img {
-  width: 80px;
+  width: clamp(40px, 10vw, 80px);
   display: block;
   margin: 0 auto;
 }
@@ -395,6 +397,7 @@ button:hover {
   position: fixed;
   top: 2rem;
   right: 0;
+  flex-direction: column;
   transform: translateX(-50%);
 
   display: flex;
@@ -702,8 +705,8 @@ button:hover {
 .guide-modal {
   position: relative;
 
-  width: fit-content;
-  max-width: 90%;
+  width: 80vw;
+  max-width: 980px;
 
   background: linear-gradient(180deg, #fffaf0, #ffe0b2);
   border-radius: 2.5rem;
@@ -738,7 +741,7 @@ button:hover {
 
 /* 📝 text */
 .guide-text {
-  font-size: 2rem;
+  font-size: clamp(2rem, 2vw, 3.5rem);
   font-weight: bold;
   color: #5d4037;
 
@@ -747,6 +750,8 @@ button:hover {
 
 /* 📦 content */
 .guide-content {
+  width: 100%;
+  /* min-width: 0; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -755,12 +760,9 @@ button:hover {
 
 /* 🖼️ image */
 .guide-img {
-  flex: 1;
   width: 100%;
-  height: 100%;
-  max-height: 400px;
-
-  object-fit: contain;
+  min-width: 0;
+  object-fit: cover;
 }
 
 /* 🔘 icon button */
