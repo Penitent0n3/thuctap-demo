@@ -95,10 +95,7 @@ function collectUsedAssets(obj: unknown, out = new Set<string>()): Set<string> {
 }
 
 /** Collect used assets from current state and all history states */
-function collectUsedAssetsWithHistory(
-  currentData: object,
-  history?: object[]
-): Set<string> {
+function collectUsedAssetsWithHistory(currentData: object, history?: object[]): Set<string> {
   const used = collectUsedAssets(currentData)
 
   if (history) {
@@ -112,11 +109,7 @@ function collectUsedAssetsWithHistory(
 }
 
 /** Delete files in <projectDir>/assets/ that are not in the used set */
-function purgeUnusedAssets(
-  projectDir: string,
-  projectData: object,
-  history?: object[]
-): void {
+function purgeUnusedAssets(projectDir: string, projectData: object, history?: object[]): void {
   const assetsDir = path.join(projectDir, 'assets')
   if (!fs.existsSync(assetsDir)) return
 
@@ -322,14 +315,11 @@ createHandler('open-project-file', async (_e, filePath?: string) => {
   }
 })
 
-createHandler(
-  'save-project',
-  async (_e, projectData: object, projectPath: string, history) => {
-    fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2), 'utf-8')
-    purgeUnusedAssets(path.dirname(projectPath), projectData, history)
-    return true
-  }
-)
+createHandler('save-project', async (_e, projectData: object, projectPath: string, history) => {
+  fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2), 'utf-8')
+  purgeUnusedAssets(path.dirname(projectPath), projectData, history)
+  return true
+})
 
 /** Save As: pick folder, copy assets, write file. Returns new paths or null if canceled. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

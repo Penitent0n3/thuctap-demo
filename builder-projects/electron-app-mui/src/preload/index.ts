@@ -7,10 +7,10 @@
 
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type {
-    GlobalSettings,
-    IPCChannelDefinitions,
-    IPCReturn,
-    RendererInvokeArgs
+  GlobalSettings,
+  IPCChannelDefinitions,
+  IPCReturn,
+  RendererInvokeArgs
 } from '../shared'
 
 /**

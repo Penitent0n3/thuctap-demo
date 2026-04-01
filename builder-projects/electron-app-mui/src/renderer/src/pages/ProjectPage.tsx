@@ -30,6 +30,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
+import { useSettings } from '@renderer/hooks/useSettings'
 import { JSX, useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SettingsPanel from '../components/SettingsPanel'
@@ -38,7 +39,6 @@ import {
   ProjectHistoryProvider,
   useProjectHistory
 } from '../context/ProjectHistoryContext'
-import { useSettings } from '../context/SettingsContext'
 import { GAME_REGISTRY } from '../games/registry'
 import { useProjectShortcuts } from '../hooks/useProjectShortcuts'
 import { AnyAppData, GameTemplate, ProjectFile, ProjectMeta } from '../types'

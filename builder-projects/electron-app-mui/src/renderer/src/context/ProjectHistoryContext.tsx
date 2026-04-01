@@ -70,16 +70,17 @@ export function useProjectHistory() {
 
   // Subscribe to store changes - triggers re-renders when state changes
   const present = useStore(store, (s) => s.data)
-  
+
   const { setPresent } = store.getState()
 
   // Get travel controls, stable
-  const { back, forward, reset, getHistory, canBack, canForward } = store.getControls()
+  const controls = store.getControls()
+  const { back, forward, reset, getHistory, canBack, canForward } = controls
 
   // Subscribe to control state changes for reactive UI
   const isCanBack = useStore(store, () => canBack())
   const isCanForward = useStore(store, () => canForward())
-  const position = useStore(store, () => store.getControls().position)
+  const position = useStore(store, () => controls.position)
 
   return {
     present,
