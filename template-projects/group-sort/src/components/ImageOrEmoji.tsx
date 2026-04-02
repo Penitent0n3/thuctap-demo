@@ -1,9 +1,9 @@
-import { isEmoji } from "../utils/isEmoji";
+import { isEmoji } from "../utils";
 
 interface ImageOrEmojiProps {
   imagePath: string;
   alt: string;
-  size?: "large" | "small" | "tiny";
+  size?: "large" | "medium" | "small" | "tiny";
 }
 
 export const ImageOrEmoji: React.FC<ImageOrEmojiProps> = ({
@@ -14,10 +14,12 @@ export const ImageOrEmoji: React.FC<ImageOrEmojiProps> = ({
   if (isEmoji(imagePath)) {
     const sizeClass =
       size === "large"
-        ? "text-6xl"
-        : size === "small"
-          ? "text-5xl"
-          : "text-2xl";
+        ? "text-7xl"
+        : size === "medium"
+          ? "text-6xl"
+          : size === "small"
+            ? "text-5xl"
+            : "text-4xl";
     return (
       <span className={`${sizeClass} pointer-events-none select-none`}>
         {imagePath}
@@ -25,7 +27,7 @@ export const ImageOrEmoji: React.FC<ImageOrEmojiProps> = ({
     );
   }
   const sizeClass =
-    size === "large" ? "w-24 h-24" : size === "small" ? "w-20 h-20" : "w-8 h-8";
+    size === "large" ? "w-24 h-24" : size === "medium" ? "w-24 h-24" : size === "small" ? "w-20 h-20" : "w-16 h-16";
   return (
     <img src={imagePath} alt={alt} className={`${sizeClass} object-contain`} />
   );

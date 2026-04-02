@@ -8,7 +8,9 @@ const GroupColumn: React.FC<GroupColumnProps> = ({ group, items }) => {
   const { setNodeRef, isOver } = useDroppable({ id: group.id });
 
   return (
-    <div
+    <motion.div
+      layout
+      transition={layoutTransition}
       ref={setNodeRef}
       className={`shrink-0 w-64 h-full flex flex-col items-center bg-blue-50 rounded-3xl border-4 transition-colors ${
         isOver
@@ -28,7 +30,7 @@ const GroupColumn: React.FC<GroupColumnProps> = ({ group, items }) => {
         </span>
       </div>
 
-      <div className="flex-1 w-full p-4 overflow-y-auto flex flex-col items-center gap-4">
+      <div className="flex-1 w-full p-4 flex flex-col items-center gap-4 group-items-scrollbar">
         <AnimatePresence mode="popLayout">
           {items.map((item) => (
             <motion.div
@@ -43,13 +45,13 @@ const GroupColumn: React.FC<GroupColumnProps> = ({ group, items }) => {
               <ImageOrEmoji
                 imagePath={item.imagePath}
                 alt={item.name}
-                size="small"
+                size="medium"
               />
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -12,17 +12,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { TutorialViewer } from "@minigame/tutorial-viewer";
 import { MY_APP_DATA } from "../data";
-import type { Item } from "../types/objects";
+import type { Group, Item } from "../types/objects";
+import { layoutTransition } from "../config";
 import DraggableItem, { ItemCard } from "./DraggableItem";
 import GroupColumn from "./GroupColumn";
 import { ImageOrEmoji } from "./ImageOrEmoji";
+import { shuffleGroups, shuffleItems } from "../utils";
 
 const MatchingGameDemo: React.FC = () => {
   const [unansweredItems, setUnansweredItems] = useState<Item[]>(
-    MY_APP_DATA.items,
+    () => shuffleItems(MY_APP_DATA.items),
   );
   const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>(
-    Object.fromEntries(MY_APP_DATA.groups.map((g) => [g.id, []])),
+    () => Object.fromEntries(MY_APP_DATA.groups.map((g) => [g.id, []])),
+  );
+  const [groups, setGroups] = useState<Group[]>(
+    () => shuffleGroups(MY_APP_DATA.groups),
   );
   const [activeItem, setActiveItem] = useState<Item | null>(null);
   const [feedback, setFeedback] = useState<{
@@ -87,8 +92,8 @@ const MatchingGameDemo: React.FC = () => {
   };
 
   const handleRetry = () => {
-    // Reset game state
-    setUnansweredItems(MY_APP_DATA.items);
+    // First, return all items back to sidebar (this triggers layout animation)
+    setUnansweredItems(shuffleItems(MY_APP_DATA.items));
     setGroupedItems(
       Object.fromEntries(MY_APP_DATA.groups.map((g) => [g.id, []])),
     );
@@ -98,13 +103,17 @@ const MatchingGameDemo: React.FC = () => {
       clearTimeout(feedbackTimeoutRef.current);
       feedbackTimeoutRef.current = null;
     }
+    // Shuffle groups after a delay to allow items to fly back first
+    setTimeout(() => {
+      setGroups(shuffleGroups(MY_APP_DATA.groups));
+    }, 500);
   };
 
   // Calculate summary data
   const getSummaryData = () => {
     const totalItems = MY_APP_DATA.items.length;
     const matchedItems = totalItems - unansweredItems.length;
-    const groupsSummary = MY_APP_DATA.groups.map((group) => ({
+    const groupsSummary = groups.map((group) => ({
       ...group,
       matchedCount: groupedItems[group.id].length,
       totalCount: MY_APP_DATA.items.filter((item) => item.groupId === group.id)
@@ -307,15 +316,21 @@ const MatchingGameDemo: React.FC = () => {
           </div>
 
           {/* KHU VỰC CÁC CỘT NHÓM */}
-          <div className="flex-1 flex gap-6 overflow-x-auto pb-4 custom-scrollbar-h">
-            {MY_APP_DATA.groups.map((group) => (
-              <GroupColumn
-                key={group.id}
-                group={group}
-                items={groupedItems[group.id]}
-              />
-            ))}
-          </div>
+          <motion.div
+            layout
+            transition={layoutTransition}
+            className="flex-1 flex gap-6 overflow-x-auto pb-4 custom-scrollbar-h"
+          >
+            <AnimatePresence>
+              {groups.map((group) => (
+                <GroupColumn
+                  key={group.id}
+                  group={group}
+                  items={groupedItems[group.id]}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </div>
 
         {/* FEEDBACK OVERLAY - Moved to top of screen */}
@@ -361,10 +376,27 @@ const MatchingGameDemo: React.FC = () => {
       </div>
 
       <style>{`
+        /* Sidebar scrollbar - yellow to match border */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fcd34d; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+        
+        /* Group columns horizontal scrollbar - blue to match theme */
         .custom-scrollbar-h::-webkit-scrollbar { height: 10px; }
-        .custom-scrollbar-h::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 10px; }
+        .custom-scrollbar-h::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar-h::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 10px; }
+        .custom-scrollbar-h::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+        
+        /* Group column items vertical scrollbar - blue overlay (doesn't affect layout) */
+        .group-items-scrollbar {
+          overflow-y: overlay; /* Makes scrollbar overlay content (webkit) */
+          overflow-x: hidden;
+        }
+        .group-items-scrollbar::-webkit-scrollbar { width: 8px; }
+        .group-items-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .group-items-scrollbar::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 10px; }
+        .group-items-scrollbar::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
       `}</style>
     </DndContext>
   );

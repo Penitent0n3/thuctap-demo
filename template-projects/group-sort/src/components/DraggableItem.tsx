@@ -23,7 +23,7 @@ export const ItemCard: React.FC<Props & { style?: React.CSSProperties }> = ({
     style={style}
     transition={layoutTransition}
   >
-    <ImageOrEmoji imagePath={item.imagePath} alt={item.name} size="tiny" />
+    <ImageOrEmoji imagePath={item.imagePath} alt={item.name} size="medium" />
   </motion.div>
 );
 
