@@ -14,7 +14,6 @@ import type { AnyAppData } from '../types'
 
 import BalloonLetterPickerEditor from './balloon-letter-picker/BalloonLetterPickerEditor'
 import GroupSortEditor from './group-sort/GroupSortEditor'
-import LabelledDiagramEditor from './labelled-diagram/LabelledDiagramEditor'
 import PairMatchingEditor from './pair-matching/PairMatchingEditor'
 import QuizEditor from './plane-quiz/QuizEditor'
 import WhackAMoleEditor from './whack-a-mole/WhackAMoleEditor'
@@ -81,15 +80,6 @@ export const GAME_REGISTRY: Record<string, GameRegistryEntry> = {
     createInitialData: () => ({
       questions: [],
       _questionCounter: 0
-    })
-  },
-
-  'labelled-diagram': {
-    Editor: LabelledDiagramEditor as GameRegistryEntry['Editor'],
-    createInitialData: () => ({
-      points: [],
-      image: null,
-      _pointCounter: 0
     })
   }
 }
