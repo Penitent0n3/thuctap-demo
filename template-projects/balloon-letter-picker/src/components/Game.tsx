@@ -5,6 +5,70 @@ import useGameLogic from '../hooks/useGameLogic';
 import { BUBBLE_IMAGES } from '../data/words';
 import { SOUNDS } from '../data/sounds';
 
+class SoundPoolManager {
+  private pools: Map<string, HTMLAudioElement[]> = new Map();
+  private currentIndex: Map<string, number> = new Map();
+  
+  constructor() {
+    // Khởi tạo pool cho từng loại âm thanh
+    this.initPool(SOUNDS.pop, 5, 0.5);      // 5 instance cho pop
+    this.initPool(SOUNDS.correct, 3, 0.6);  // 3 instance cho correct
+    this.initPool(SOUNDS.complete, 2, 0.7); // 2 instance cho complete
+  }
+  
+  private initPool(url: string, size: number, volume: number) {
+    const pool: HTMLAudioElement[] = [];
+    for (let i = 0; i < size; i++) {
+      const audio = new Audio(url);
+      audio.volume = volume;
+      audio.preload = 'auto';
+      pool.push(audio);
+    }
+    this.pools.set(url, pool);
+    this.currentIndex.set(url, 0);
+  }
+  
+  play(url: string) {
+    const pool = this.pools.get(url);
+    const index = this.currentIndex.get(url) || 0;
+    
+    if (pool && pool.length > 0) {
+      const audio = pool[index];
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play().catch(e => console.log('Audio error:', e));
+      
+      // Chuyển đến instance tiếp theo (vòng tròn)
+      this.currentIndex.set(url, (index + 1) % pool.length);
+    } else {
+      // Fallback: tạo instance mới nếu không có pool
+      const audio = new Audio(url);
+      audio.play().catch(e => console.log('Audio error:', e));
+    }
+  }
+  
+  // Các phương thức tiện ích
+  playPop() {
+    this.play(SOUNDS.pop);
+  }
+  
+  playCorrect() {
+    this.play(SOUNDS.correct);
+  }
+  
+  playComplete() {
+    this.play(SOUNDS.complete);
+  }
+}
+
+// Tạo instance duy nhất của SoundPoolManager
+const soundPool = new SoundPoolManager();
+
+// Hàm phát âm thanh (gọi tắt)
+const playPopSound = () => soundPool.playPop();
+const playCorrectSound = () => soundPool.playCorrect();
+const playCompleteSound = () => soundPool.playComplete();
+
 const Game: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,29 +151,46 @@ const Game: React.FC = () => {
     }, 300);
   };
 
-  const playCompleteSound = () => {
-  const audio = new Audio(SOUNDS.complete);
-  audio.volume = 0.7;
+  /*const playSound = (soundUrl: string, volume: number = 0.7) => {
+  const audio = new Audio(soundUrl);
+  audio.volume = volume;
   
-  // Thử phát, nếu lỗi thì dùng beep
   audio.play().catch(() => {
-    console.log('MP3 failed, using beep');
+    console.log(`MP3 failed (${soundUrl}), using beep`);
     // Beep fallback
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
+    
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
+    
     oscillator.frequency.value = 880;
     oscillator.type = 'sine';
-    gainNode.gain.value = 0.3;
+    gainNode.gain.value = volume;
+    
     oscillator.start();
     gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
     oscillator.stop(audioContext.currentTime + 0.3);
+    
     if (audioContext.state === 'suspended') audioContext.resume();
   });
 };
-  
+
+// Hàm phát âm thanh bong bóng nổ (pop)
+const playPopSound = () => {
+  playSound(SOUNDS.pop, 0.5);
+};
+
+// Hàm phát âm thanh bắn đúng (correct)
+const playCorrectSound = () => {
+  playSound(SOUNDS.correct, 0.6);
+};
+
+// Hàm phát âm thanh hoàn thành từ (complete)
+const playCompleteSound = () => {
+  playSound(SOUNDS.complete, 0.7);
+};*/
   // Hàm hiển thị nhân vật chúc mừng
   const triggerCelebration = () => {
     setShowCelebration(true);
@@ -121,18 +202,8 @@ const Game: React.FC = () => {
   // Hàm reset game
   const handleResetGame = () => {
     resetGame();
-    sounds.pop.pause();
-    sounds.pop.currentTime = 0;
-    sounds.complete.pause();
-    sounds.complete.currentTime = 0;
   };
-  const [sounds] = useState(() => {
-  const soundFiles = SOUNDS;
-  return {
-    pop: new Audio(soundFiles.pop),
-    complete: new Audio(soundFiles.complete)
-  };
-});
+  
   
   // Load hình ảnh hiệu ứng
   useEffect(() => {
@@ -193,10 +264,25 @@ const Game: React.FC = () => {
   // Đăng ký callback
   useEffect(() => {
   setCallbacks({
+    onCorrect: (letter: string, isWordComplete: boolean) => {
+      // Phát âm thanh bắn đúng
+      playCorrectSound(); 
+      if (isWordComplete) {
+        playCompleteSound();
+        triggerCelebration();
+      }
+    },
+    onWrong: (letter: string) => {
+      playPopSound(); // Phát âm thanh pop khi bắn sai
+    },
+    /*onWrong: (letter: string) => {
+      // Phát âm thanh pop khi bắn sai
+      playPopSound();
+    },
     onWordComplete: (word: string) => {
       triggerCelebration();
       playCompleteSound();
-    }
+    }*/
   });
 }, [setCallbacks, currentWord.word]);
   
@@ -295,9 +381,7 @@ const Game: React.FC = () => {
 
     if (hitBubble) {
       triggerExplode(hitBubble.x, hitBubble.y);
-      sounds.pop.pause();
-      sounds.pop.currentTime = 0;
-      sounds.pop.play().catch(e => console.log('Audio play failed:', e));
+      //playPopSound();
       shootBubble(hitBubble.id, hitBubble.letter);
     }
   };

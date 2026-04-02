@@ -8,6 +8,7 @@ export interface WordData {
 export interface SoundData {
   pop: string;
   complete: string;
+  correct: string;
 }
 
 declare global {
