@@ -152,12 +152,18 @@ export const GAME_DATA_TRANSFORMS: Record<string, DataTransform> = {
   'whack-a-mole': (appData) => {
     // Template expects:
     // {
-    //   groupId,
-    //   question,
-    //   questionImage,
-    //   answerText,
-    //   answerImage
-    // }[]
+    //   title: string,
+    //   class: string,
+    //   questions: [
+    //     {
+    //       groupId,
+    //       question,
+    //       questionImage,
+    //       answerText,
+    //       answerImage
+    //     }
+    //   ]
+    // }
     // Internal format uses: id, question, questionImage, answerText, answerImage
     // Transform: id -> groupId (for compatibility with existing template)
     const data = appData as WhackAMoleAppData
@@ -172,7 +178,11 @@ export const GAME_DATA_TRANSFORMS: Record<string, DataTransform> = {
       })
     )
 
-    return omitInternalKeys(questions)
+    return omitInternalKeys({
+      title: data.title,
+      class: data.class,
+      questions
+    })
   },
 
   // Labelled Diagram

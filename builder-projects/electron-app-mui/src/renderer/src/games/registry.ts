@@ -79,6 +79,8 @@ export const GAME_REGISTRY: Record<string, GameRegistryEntry> = {
   'whack-a-mole': {
     Editor: WhackAMoleEditor as GameRegistryEntry['Editor'],
     createInitialData: () => ({
+      title: '',
+      class: '',
       questions: [],
       _questionCounter: 0
     })

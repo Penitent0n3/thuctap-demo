@@ -1,9 +1,12 @@
-import { Box } from '@mui/material'
+import CollectionsIcon from '@mui/icons-material/Collections'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { Box, Typography } from '@mui/material'
 import { useEntityCreateShortcut } from '@renderer/hooks/useEntityCreateShortcut'
 import { useSettings } from '@renderer/hooks/useSettings'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
+import { SidebarTab } from '../../components/editors'
 import { WhackAMoleAppData, WhackAMoleQuestion } from '../../types'
-import { QuestionsTab, SummarySidebar } from './components'
+import { QuestionsTab, SettingsTab } from './components'
 
 interface Props {
   appData: WhackAMoleAppData
@@ -11,9 +14,13 @@ interface Props {
   onChange: (data: WhackAMoleAppData) => void
 }
 
+type Tab = 'questions' | 'settings'
+
 function normalize(d: WhackAMoleAppData): WhackAMoleAppData {
   return {
     ...d,
+    title: d.title ?? '',
+    class: d.class ?? '',
     _questionCounter: d._questionCounter ?? 0,
     questions: d.questions ?? []
   }
@@ -25,6 +32,7 @@ export default function WhackAMoleEditor({
   onChange
 }: Props): React.ReactElement {
   const data = normalize(raw)
+  const [tab, setTab] = useState<Tab>('questions')
   const { resolved } = useSettings()
   const { questions } = data
 
@@ -81,21 +89,63 @@ export default function WhackAMoleEditor({
     onTier1: addQuestion
   })
 
+  const unnamedQ = questions.filter((q) => !q.question.trim())
+
   return (
     <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
       {/* ── Sidebar ── */}
-      <SummarySidebar questions={questions} />
+      <Box
+        sx={{
+          width: 220,
+          flexShrink: 0,
+          borderRight: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#13161f',
+          p: 2,
+          gap: 1
+        }}
+      >
+        <Typography
+          variant="overline"
+          color="text.secondary"
+          sx={{ letterSpacing: 2, fontSize: '0.65rem' }}
+        >
+          Sections
+        </Typography>
+        <SidebarTab
+          active={tab === 'questions'}
+          onClick={() => setTab('questions')}
+          icon={<CollectionsIcon fontSize="small" />}
+          label="Questions"
+          badge={questions.length}
+          badgeColor={unnamedQ.length > 0 ? 'error' : 'default'}
+        />
+        <SidebarTab
+          active={tab === 'settings'}
+          onClick={() => setTab('settings')}
+          icon={<SettingsIcon fontSize="small" />}
+          label="Settings"
+          badge={0}
+          badgeColor="default"
+        />
+      </Box>
 
       {/* ── Main ── */}
       <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
-        <QuestionsTab
-          questions={questions}
-          projectDir={projectDir}
-          onAddQuestion={addQuestion}
-          onAddQuestionFromDrop={addQuestionFromDrop}
-          onUpdateQuestion={updateQuestion}
-          onDeleteQuestion={deleteQuestion}
-        />
+        {tab === 'questions' && (
+          <QuestionsTab
+            questions={questions}
+            projectDir={projectDir}
+            onAddQuestion={addQuestion}
+            onAddQuestionFromDrop={addQuestionFromDrop}
+            onUpdateQuestion={updateQuestion}
+            onDeleteQuestion={deleteQuestion}
+          />
+        )}
+        {tab === 'settings' && (
+          <SettingsTab data={data} projectDir={projectDir} onChange={onChange} />
+        )}
       </Box>
     </Box>
   )

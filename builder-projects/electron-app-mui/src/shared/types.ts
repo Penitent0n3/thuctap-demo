@@ -116,6 +116,8 @@ export interface WhackAMoleQuestion {
   answerImage: string | null
 }
 export interface WhackAMoleAppData {
+  title: string
+  class: string
   questions: WhackAMoleQuestion[]
   _questionCounter: number
 }
