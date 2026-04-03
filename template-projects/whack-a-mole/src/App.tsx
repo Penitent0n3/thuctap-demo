@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import GamePage from "./components/GamePage";
 import GameControls from "./components/GameControls";
 import GuideModal from "./components/GuideModal";
-import { data } from "./constants";
+import { data, soundFiles } from "./constants";
 import HammerCursor from "./components/HammerCursor";
 import GameCompleteModal from "./components/GameCompleteModal";
 import type { Answer, AnswerPool, typeGame } from "./type";
@@ -15,7 +15,7 @@ function App() {
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    bgMusicRef.current = new Audio('/assets/sounds/happy.mp3');
+    bgMusicRef.current = new Audio(soundFiles.bgMusic);
     bgMusicRef.current.loop = true;
     bgMusicRef.current.volume = 0.5;
   }, []);

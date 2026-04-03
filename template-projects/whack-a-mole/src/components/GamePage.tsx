@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Hole from "./Hole";
 import type { Question, RoundAnswer, AnswerPool } from "../type";
 import { playSound } from "../helper";
+import { soundFiles } from "../constants";
 
 const TOTAL = 10;
 
@@ -34,8 +35,8 @@ export default function GamePage({
   const dizzyRef = useRef<HTMLAudioElement|null>(null);
 
   useEffect(() => {
-    buzzRef.current = new Audio('/assets/sounds/buzz.wav');
-    dizzyRef.current = new Audio('/assets/sounds/dizzy.wav');
+    buzzRef.current = new Audio(soundFiles.buzz);
+    dizzyRef.current = new Audio(soundFiles.dizzy);
   }, []);
 
   // 👉 thêm cho 3 lượt

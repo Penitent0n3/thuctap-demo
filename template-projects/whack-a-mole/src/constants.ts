@@ -38,3 +38,10 @@ export const guidelinePages = [
         image: "./assets/images/guide-3.png"
     }
 ];
+
+export const soundFiles = {
+  hit: "./assets/sounds/hit.ogg",
+  bgMusic: "./assets/sounds/happy.mp3",
+  dizzy: "./assets/sounds/dizzy.wav",
+  buzz: "./assets/sounds/buzz.wav"
+}
