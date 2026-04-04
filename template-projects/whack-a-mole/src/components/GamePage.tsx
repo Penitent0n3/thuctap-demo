@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Hole from "./Hole";
 import type { Question, RoundAnswer, AnswerPool } from "../type";
 import audioManagerInstance from "../utils/AudioManager-v2";
+import SignBoard from "./SignBoard";
 
 const TOTAL = 10;
 
@@ -207,15 +208,32 @@ export default function GamePage({
 
   return (
     <div className="page">
-      <div className="sign-box">
-        {/* <img src="/assets/wood.svg" alt="" />
-         */}
+      {/* <div className="sign-box">
         <div className="sign-box-wood"></div>
         <div className="container">
           <div className="sign-text">{currentIndex + 1 + ". " + question.question}</div>
           {question.questionImage && <img className="question-img" src={question.questionImage} alt="" />}
         </div>
-      </div>
+      </div> */}
+
+      {/* <div className={styles.sign}>
+        <div className={styles.board}>
+          <div className={styles.content}>
+            <div className={styles.text}>
+              {currentIndex + 1 + ". " + question.question}
+            </div>
+
+            {question.questionImage && (
+              <img
+                className={styles["question-img"]}
+                src={question.questionImage}
+              />
+            )}
+          </div>
+        </div>
+      </div> */}
+
+      <SignBoard question={question} currentIndex={currentIndex} />
 
       <main>
         <div className="row row-3">
