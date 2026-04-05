@@ -7,6 +7,7 @@ import HammerCursor from "./components/HammerCursor";
 import GameCompleteModal from "./components/GameCompleteModal";
 import type { Answer, AnswerPool, typeGame } from "./type";
 import audioManagerInstance from "./utils/AudioManager-v2";
+import StartScreen from "./components/StartScreen";
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -123,11 +124,11 @@ function App() {
   return (
     <>
       {!isStarted && (
-        <div className="start-screen">
-          <button className="start-btn" onClick={handleStart}>
-            START GAME
-          </button>
-        </div>
+        <StartScreen
+          classId={APP_DATA.class}
+          title={APP_DATA.title}
+          onStart={handleStart}
+        />
       )}
 
       <div className={`scene ${isEntering ? "enter" : ""}`}>
@@ -145,14 +146,7 @@ function App() {
               <GameControls
                 isPlaying={isPlaying}
                 isMuted={isMuted}
-                onPlayPause={() => setIsPlaying(prev => {
-                  if (prev) {
-                    audioManagerInstance.pauseBg()
-                  } else {
-                    audioManagerInstance.resumeBg()
-                  }
-                  return !prev
-                })}
+                onPlayPause={() => setIsPlaying(prev => !prev)}
                 onRestart={handleRestart}
                 onOpenGuide={() => {
                   setIsPlaying(false)

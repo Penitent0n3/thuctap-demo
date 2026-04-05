@@ -6,9 +6,11 @@ export type Question = {
   answerImage?: string;
 };
 
+type ClassId = "1" | "2" | "3" | "4" | "5";
+
 export type GameData = {
   title: string;
-  class: string,
+  class: ClassId,
   questions: Question[];
 }
 

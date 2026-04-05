@@ -54,6 +54,9 @@ export default function GamePage({
   };
 
   useEffect(() => {
+  }, [])
+
+  useEffect(() => {
     if (!isPlaying) return
 
     autoHideMoles(activeIndexes);
@@ -144,7 +147,7 @@ export default function GamePage({
     setActiveIndexes(next);
     setHitState({});
 
-    const ROUND_TIME = Math.random() * 1000 + 2500;
+    const ROUND_TIME = 3500;
 
     startTimeRef.current = Date.now();
     roundTimeRef.current = ROUND_TIME;
@@ -200,9 +203,10 @@ export default function GamePage({
       audioManagerInstance.play('buzz', 0.3);
       const elapsed = Date.now() - startTimeRef.current;
       const remaining = Math.max(roundTimeRef.current - elapsed, 0);
+      const newActive = activeIndexes.filter(i => i !== index);
       setGoingDown(prev => [...prev, index]);
-      setActiveIndexes(prev => prev.filter(i => i !== index));
-      createTimeoutRef(activeIndexes.filter(i => i !== index), remaining);
+      setActiveIndexes(newActive);
+      createTimeoutRef(newActive, remaining);
     }
   };
 

@@ -1,7 +1,7 @@
 import type { GameData } from './type'
 
 export const data: GameData = {
-  title: "Whack-a-Mole",
+  title: "Whack a Mole",
   class: "1",
   questions: [
     {
@@ -24,6 +24,27 @@ export const data: GameData = {
       // questionImage: "./assets/images/toupeira2.svg",
       // answerText: "Nửa trên nửa dưới",
       answerImage: "./assets/images/toupeira2.svg"
+    },
+    {
+      groupId: 4,
+      question: "hope",
+      questionImage: "./assets/images/mascots/hope.png",
+      answerText: "Dưới đất",
+      answerImage: "./assets/images/mascots/hope.png"
+    },
+    {
+      groupId: 5,
+      question: "icon",
+      questionImage: "./assets/images/icon.png",
+      answerText: "icon",
+      answerImage: "./assets/images/icon.png"
+    },
+    {
+      groupId: 6,
+      question: "chicky",
+      // questionImage: "./assets/images/toupeira2.svg",
+      // answerText: "Nửa trên nửa dưới",
+      answerImage: "./assets/images/mascots/chicky.png"
     }
   ]
 };
@@ -48,4 +69,72 @@ export const soundFiles = {
   bgMusic: "./assets/sounds/happy.mp3",
   dizzy: "./assets/sounds/dizzy.wav",
   buzz: "./assets/sounds/buzz.wav"
+}
+
+export const guideMascots = {
+  "1": {
+    name: "Tớ là Chicky",
+    intro: "Tớ sẽ dẫn các cậu tham gia trò chơi của hôm nay nhé!",
+    outro: "Các câu chơi rất cừ đấy nhé",
+    catch: "Bắt được rồi!",
+    src: "./assets/images/mascots/Chicky.png",
+    theme: {
+      bg: "linear-gradient(180deg, #FFF3A3, #AEE2FF)",
+      primary: "#FFB800",
+      text: "#5A3E00",
+      button: "#FF9F1C"
+    }
+  },
+  "2": {
+    name: "Tớ là Kitty",
+    intro: "Tớ sẽ dẫn các cậu tham gia trò chơi của hôm nay nhé!",
+    outro: "Các câu chơi rất cừ đấy nhé",
+    catch: "Bắt được rồi!",
+    src: "./assets/images/mascots/Kitty.png",
+    theme: {
+      bg: "linear-gradient(180deg, #FFE0B2, #FFF3E0)",
+      primary: "#FF9800",
+      text: "#4E342E",
+      button: "#FB8C00"
+    }
+  },
+  "3": {
+    name: "Tớ là Greenie",
+    intro: "Tớ sẽ dẫn các cậu tham gia trò chơi của hôm nay nhé!",
+    outro: "Các câu chơi rất cừ đấy nhé",
+    catch: "Bắt được rồi!",
+    src: "./assets/images/mascots/Greenie.png",
+    theme: {
+      bg: "linear-gradient(180deg, #C8F7C5, #E8FFF3)",
+      primary: "#4CAF50",
+      text: "#1B5E20",
+      button: "#66BB6A"
+    }
+  },
+  "4": {
+    name: "Tớ là Gabriel",
+    intro: "Tớ sẽ dẫn các cậu tham gia trò chơi của hôm nay nhé!",
+    outro: "Các câu chơi rất cừ đấy nhé",
+    catch: "Bắt được rồi!",
+    src: "./assets/images/mascots/Gabriel.png",
+    theme: {
+      bg: "linear-gradient(180deg, #DFFFD6, #FFF5CC)",
+      primary: "#8BC34A",
+      text: "#2E4A1F",
+      button: "#FFC107"
+    }
+  },
+  "5": {
+    name: "Tớ là Hope",
+    intro: "Tớ sẽ dẫn các cậu tham gia trò chơi của hôm nay nhé!",
+    outro: "Các câu chơi rất cừ đấy nhé",
+    catch: "Bắt được rồi!",
+    src: "./assets/images/mascots/Hope.png",
+    theme: {
+      bg: "linear-gradient(180deg, #CDEBFF, #F0F8FF)",
+      primary: "#2196F3",
+      text: "#0D3B66",
+      button: "#42A5F5"
+    }
+  }
 }
