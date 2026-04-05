@@ -3,7 +3,6 @@
 export interface QuizOption {
   label?: string;
   image?: string;
-  icon?: string;
 }
 
 export interface Question {
@@ -29,9 +28,9 @@ const TEST_DATA: Question[] = [
   {
     question: "Chọn biểu tượng gần với ếch nhất:",
     options: [
-      { icon: "🐸", label: "Éch" },
-      { icon: "🐟", label: "Cá" },
-      { icon: "🦆", label: "Vịt" },
+      { image: "🐸", label: "Éch" },
+      { image: "🐟", label: "Cá" },
+      { image: "🦆", label: "Vịt" },
     ],
     correctIndex: 0,
   },
@@ -48,9 +47,9 @@ const TEST_DATA: Question[] = [
   {
     question: "Quả táo màu gì?",
     options: [
-      { icon: "🍎", label: "Đỏ" },
-      { icon: "🍌", label: "Vàng" },
-      { icon: "🍇", label: "Tím" },
+      { image: "🍎", label: "Đỏ" },
+      { image: "🍌", label: "Vàng" },
+      { image: "🍇", label: "Tím" },
     ],
     correctIndex: 0,
   },
@@ -72,9 +71,9 @@ const TEST_DATA: Question[] = [
   {
     question: "Con mèo kêu tiếng gì?",
     options: [
-      { icon: "🐱", label: "Meo" },
-      { icon: "🐕", label: "Gâu" },
-      { icon: "🐄", label: "Moó" },
+      { image: "🐱", label: "Meo" },
+      { image: "🐕", label: "Gâu" },
+      { image: "🐄", label: "Moó" },
     ],
     correctIndex: 0,
   },
@@ -91,7 +90,6 @@ export function normalizeOption(raw: string | QuizOption): QuizOption {
   return {
     label: raw.label ?? "",
     image: raw.image,
-    icon: raw.icon,
   };
 }
 

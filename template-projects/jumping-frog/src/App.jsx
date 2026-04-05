@@ -392,7 +392,7 @@ function App() {
                       ? 'is-wrong'
                       : 'is-correct'
                     : ''
-                const ariaBits = [option.label, option.icon].filter(Boolean).join(' ').trim()
+                const ariaBits = [option.label, option.image].filter(Boolean).join(' ').trim()
 
                 return (
                   <button
@@ -410,18 +410,19 @@ function App() {
                   >
                     <span className="lilypad-key">{pad.key}</span>
                     <span className="lilypad-content">
-                      {option.icon ? (
-                        <span className="lilypad-icon" aria-hidden="true">
-                          {option.icon}
-                        </span>
-                      ) : null}
                       {option.image ? (
-                        <img
-                          className="lilypad-media"
-                          src={option.image}
-                          alt={option.label || 'Dap an'}
-                          draggable={false}
-                        />
+                        option.image.startsWith('http') || option.image.startsWith('/') || option.image.includes('.') ? (
+                          <img
+                            className="lilypad-media"
+                            src={option.image}
+                            alt={option.label || 'Dap an'}
+                            draggable={false}
+                          />
+                        ) : (
+                          <span className="lilypad-icon" aria-hidden="true">
+                            {option.image}
+                          </span>
+                        )
                       ) : null}
                       {option.label ? <span className="lilypad-text">{option.label}</span> : null}
                     </span>
