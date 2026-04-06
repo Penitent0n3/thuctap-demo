@@ -61,6 +61,7 @@ export function WordCard({
           onChange={(v) => onUpdate(item.id, { word: v })}
           placeholder="e.g. JUMP"
           autoFocus={autoFocus}
+          required
         />
         <Tooltip title="Delete word">
           <IconButton

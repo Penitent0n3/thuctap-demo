@@ -8,6 +8,8 @@ export interface AtoZWordFieldProps {
   placeholder?: string
   autoFocus?: boolean
   sx?: SxProps
+  /** When true, the TextField shows a required indicator and error state when empty */
+  required?: boolean
 }
 
 /**
@@ -22,10 +24,12 @@ export function AtoZWordField({
   onChange,
   placeholder,
   autoFocus,
-  sx
+  sx,
+  required = false
 }: AtoZWordFieldProps): React.ReactElement {
   const wordText = value.trim().toUpperCase()
   const isInvalid = wordText && !/^[A-Z]+$/.test(wordText)
+  const isEmpty = !value.trim()
 
   const didSelect = useRef(false)
   const handleRef = useCallback(
@@ -59,8 +63,9 @@ export function AtoZWordField({
         onChange={(e) => onChange(e.target.value.toUpperCase())}
         placeholder={placeholder}
         size="small"
-        error={!!isInvalid || !value.trim()}
-        helperText={!value.trim() ? 'Required' : isInvalid ? 'Only A–Z letters allowed' : ''}
+        required={required}
+        error={!!isInvalid || (required && isEmpty)}
+        helperText={required && isEmpty ? 'Required' : isInvalid ? 'Only A–Z letters allowed' : ''}
         inputProps={{ style: { fontFamily: 'monospace', letterSpacing: 4, fontWeight: 700 } }}
         inputRef={handleRef}
         sx={{ width: 220 }}

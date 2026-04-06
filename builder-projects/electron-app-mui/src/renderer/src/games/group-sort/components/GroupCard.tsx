@@ -61,6 +61,7 @@ export function GroupCard({
           onChange={(v) => onUpdate(group.id, { name: v })}
           placeholder="e.g. Animals, Fruits, Colors…"
           autoFocus={autoFocus}
+          required
         />
         <Tooltip title="Delete group">
           <IconButton

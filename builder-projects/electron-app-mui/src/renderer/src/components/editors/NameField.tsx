@@ -9,6 +9,8 @@ export interface NameFieldProps {
   autoFocus?: boolean
   multiline?: boolean
   sx?: SxProps
+  /** When true, the TextField shows a required indicator and error state when empty */
+  required?: boolean
 }
 
 /**
@@ -22,7 +24,8 @@ export function NameField({
   placeholder,
   autoFocus,
   multiline,
-  sx
+  sx,
+  required = false
 }: NameFieldProps): React.ReactElement {
   const didSelect = useRef(false)
   const handleRef = useCallback(
@@ -47,8 +50,9 @@ export function NameField({
       multiline={multiline}
       minRows={multiline ? 2 : undefined}
       sx={[{ flex: 1 }, ...(Array.isArray(sx) ? sx : [sx])]}
-      error={!value.trim()}
-      helperText={!value.trim() ? 'Required' : ''}
+      required={required}
+      error={required && !value.trim()}
+      helperText={required && !value.trim() ? 'Required' : ''}
       inputRef={handleRef}
     />
   )

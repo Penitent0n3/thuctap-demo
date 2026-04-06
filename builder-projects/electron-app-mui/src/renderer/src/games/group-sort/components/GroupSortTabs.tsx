@@ -258,6 +258,7 @@ export function OverviewTab({
                       value={group.name}
                       onChange={(v) => onUpdateGroup(group.id, { name: v })}
                       placeholder="Group name…"
+                      required
                     />
                     <Chip
                       label={`${gItems.length} item${gItems.length !== 1 ? 's' : ''}`}

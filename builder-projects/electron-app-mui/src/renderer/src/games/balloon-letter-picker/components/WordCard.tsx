@@ -75,6 +75,7 @@ export function WordCard({
               onChange={(v) => onUpdate(word.id, { word: v })}
               placeholder="e.g. JUMP"
               autoFocus={autoFocus}
+              required
             />
 
             <TextField

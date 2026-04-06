@@ -75,6 +75,7 @@ export function ItemCard({
           onChange={(v) => onUpdate(item.id, { name: v })}
           placeholder="e.g. Dog, Apple, Red…"
           autoFocus={autoFocus}
+          required
         />
         <FormControl size="small" sx={{ minWidth: 160 }} error={!assigned}>
           <InputLabel>Belongs to group</InputLabel>

@@ -1,6 +1,7 @@
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
 import ClearIcon from '@mui/icons-material/Clear'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Box, CircularProgress, IconButton, SxProps, Tooltip, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -14,6 +15,8 @@ interface Props {
   label?: string
   size?: number
   sx?: SxProps
+  /** When true, shows a warning UI if no image is set */
+  required?: boolean
 }
 
 export default function ImagePicker({
@@ -23,7 +26,8 @@ export default function ImagePicker({
   onChange,
   label,
   size = 100,
-  sx
+  sx,
+  required = false
 }: Props): React.ReactElement {
   const [loading, setLoading] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -84,7 +88,11 @@ export default function ImagePicker({
   return (
     <Tooltip
       title={
-        value ? 'Click to change image · Drop image here' : 'Click to add image · Drop image here'
+        required && !value
+          ? 'This field requires an image. Click to add or drop an image.'
+          : value
+            ? 'Click to change image · Drop image here'
+            : 'Click to add image · Drop image here'
       }
     >
       <Box
@@ -108,7 +116,9 @@ export default function ImagePicker({
               ? 'primary.main'
               : value
                 ? 'primary.dark'
-                : 'rgba(255,255,255,0.15)',
+                : required
+                  ? 'warning.main'
+                  : 'rgba(255,255,255,0.15)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -120,7 +130,9 @@ export default function ImagePicker({
               ? 'rgba(110,231,183,0.08)'
               : value
                 ? 'transparent'
-                : 'rgba(255,255,255,0.02)',
+                : required
+                  ? 'rgba(255,183,77,0.04)'
+                  : 'rgba(255,255,255,0.02)',
             transition: 'border-color 0.15s, background 0.15s',
             flexShrink: 0,
             '&:hover': { borderColor: 'primary.main', background: 'rgba(110,231,183,0.04)' }
@@ -191,6 +203,28 @@ export default function ImagePicker({
             >
               <ClearIcon sx={{ fontSize: 12 }} />
             </IconButton>
+          </>
+        ) : required && !value ? (
+          <>
+            <WarningAmberIcon
+              sx={{
+                fontSize: size * 0.4,
+                color: 'warning.main'
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'warning.main',
+                fontSize: '0.65rem',
+                mt: 0.5,
+                textAlign: 'center',
+                px: 0.5,
+                lineHeight: 1.2
+              }}
+            >
+              Required
+            </Typography>
           </>
         ) : (
           <>

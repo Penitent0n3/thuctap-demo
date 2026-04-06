@@ -27,7 +27,7 @@ export function QuestionsTab({
   onDeleteQuestion
 }: QuestionsTabProps): React.ReactElement {
   const noQuestion = questions.filter((q) => !q.question.trim())
-  const noAnswer = questions.filter((q) => !q.answerText.trim())
+  const noAnswer = questions.filter((q) => !q.answerText.trim() && q.answerImage === null)
   const hasIssues = noQuestion.length > 0 || noAnswer.length > 0
 
   return (
@@ -35,8 +35,8 @@ export function QuestionsTab({
       <Collapse in={hasIssues}>
         <Alert severity="warning" sx={{ mb: 2, fontSize: '0.8rem' }}>
           {[
-            noQuestion.length > 0 && `${noQuestion.length} question(s) have no text`,
-            noAnswer.length > 0 && `${noAnswer.length} question(s) have no answer text`
+            noQuestion.length > 0 && `${noQuestion.length} question(s) missing text`,
+            noAnswer.length > 0 && `${noAnswer.length} answer(s) missing text and image`
           ]
             .filter(Boolean)
             .join(' · ')}
@@ -94,7 +94,7 @@ export interface SummarySidebarProps {
  */
 export function SummarySidebar({ questions }: SummarySidebarProps): React.ReactElement {
   const noQuestion = questions.filter((q) => !q.question.trim())
-  const noAnswer = questions.filter((q) => !q.answerText.trim())
+  const noAnswer = questions.filter((q) => !q.answerText.trim() && q.answerImage === null)
   const hasIssues = noQuestion.length > 0 || noAnswer.length > 0
 
   return (
@@ -156,7 +156,7 @@ export function SummarySidebar({ questions }: SummarySidebarProps): React.ReactE
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
             <WarningAmberIcon sx={{ fontSize: 14, color: 'warning.main' }} />
             <Typography variant="caption" color="warning.main">
-              {noAnswer.length} missing answer text
+              {noAnswer.length} answer(s) missing text & image
             </Typography>
           </Box>
         )}

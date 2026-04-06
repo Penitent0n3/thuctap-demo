@@ -61,6 +61,7 @@ export function PairCard({
           onChange={(v) => onUpdate(item.id, { keyword: v })}
           placeholder="e.g. Apple, Dog…"
           autoFocus={autoFocus}
+          required
         />
         <TextField
           label="Min Pairs"

@@ -82,6 +82,7 @@ export function QuestionCard({
             placeholder="e.g. Con chuột đang ở vị trí nào?"
             autoFocus={autoFocus}
             multiline
+            required
           />
           <Typography variant="caption" color="text.secondary">
             This question will be displayed to students.
@@ -143,8 +144,8 @@ export function QuestionCard({
           onChange={(p) => onUpdate(question.id, { answerImage: p })}
           label="Answer"
           size={80}
+          required={question.answerText.trim().length === 0}
         />
-
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <NameField
             label="Answer text"
@@ -152,6 +153,7 @@ export function QuestionCard({
             onChange={(v) => onUpdate(question.id, { answerText: v })}
             placeholder="e.g. Dưới đất"
             multiline={false}
+            required={!question.answerImage}
           />
           <Typography variant="caption" color="text.secondary">
             In the game, this mole will appear among other decoy moles.
